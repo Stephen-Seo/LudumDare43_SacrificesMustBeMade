@@ -15,6 +15,8 @@ endif()
 set(LD43_SOURCES
     src/main.cpp
     src/ECStuff.cpp
+    src/CommonValues.cpp
+    src/CommonFunctions.cpp
     GameDevTools/src/GDT/CollisionDetection.cpp
     GameDevTools/src/GDT/GameLoop.cpp
 )
