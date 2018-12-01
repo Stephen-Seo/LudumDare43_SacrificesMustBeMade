@@ -68,7 +68,15 @@ int main(int argc, char** argv)
                     if(bitset->test(2))
                     {
                         context.playSfx(1);
-                        manager.getEntityData<ECStuff::Vel>(context.playerID)->y -= JUMP_VEL;
+                        if(bitset->test(10))
+                        {
+                            manager.getEntityData<ECStuff::Vel>(context.playerID)->y -= JUMP_SPRING_VEL;
+                            bitset->reset(10);
+                        }
+                        else
+                        {
+                            manager.getEntityData<ECStuff::Vel>(context.playerID)->y -= JUMP_VEL;
+                        }
                         bitset->reset(2);
 
                         // create fragment

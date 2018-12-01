@@ -21,6 +21,7 @@ void CommonFns::loadLevel(const unsigned int id, ManagerT& manager)
     {
     case 0:
     {
+        // ground
         auto id = manager.addEntity();
         manager.addComponent<ECStuff::Pos>(id, 100.0f, 270.0f - 50.0f);
         manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
@@ -34,6 +35,7 @@ void CommonFns::loadLevel(const unsigned int id, ManagerT& manager)
         manager.addComponent<ECStuff::Size>(id, 100.0f, 150.0f);
         manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
 
+        // exit
         id = manager.addEntity();
         manager.addComponent<ECStuff::Pos>(id, 435.0f, 270.0f - 40.0f);
         manager.addComponent<ECStuff::Size>(id, 30.0f, 30.0f);
@@ -44,10 +46,35 @@ void CommonFns::loadLevel(const unsigned int id, ManagerT& manager)
         break;
     case 1:
     {
+        // ground
         auto id = manager.addEntity();
-        manager.addComponent<ECStuff::Pos>(id, 300.0f, 270.0f - 50.0f);
+        manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 50.0f);
         manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
         manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        id = manager.addEntity();
+        manager.addComponent<ECStuff::Pos>(id, 80.0f, 270.0f - 150.0f);
+        manager.addComponent<ECStuff::Size>(id, 400.0f, 10.0f);
+        manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        id = manager.addEntity();
+        manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 200.0f);
+        manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
+        manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+
+        // spring
+        id = manager.addEntity();
+        manager.addComponent<ECStuff::Pos>(id, 10.0f, 270.0f - 10.0f);
+        manager.addComponent<ECStuff::Size>(id, 50.0f, 10.0f);
+        manager.addComponent<ECStuff::Drawable>(id, 128, 255, 128);
+        manager.addComponent<BitsetT>(id);
+        manager.getEntityData<BitsetT>(id)->set(9);
+
+        //exit
+        id = manager.addEntity();
+        manager.addComponent<ECStuff::Pos>(id, 435.0f, 270.0f - 200.0f);
+        manager.addComponent<ECStuff::Size>(id, 30.0f, 30.0f);
+        manager.addComponent<ECStuff::Drawable>(id, 128, 128, 255);
+        manager.addComponent<BitsetT>(id);
+        manager.getEntityData<BitsetT>(id)->set(4);
     }
         break;
     default:
@@ -278,11 +305,14 @@ void CommonFns::collDetUpdateY(
     ECStuff::Size* size)
 {
     Context* context = (Context*)ptr;
-    if(context->manager->hasComponent<BitsetT>(id)
-        && context->manager->getEntityData<BitsetT>(id)->test(8))
+    if(context->manager->hasComponent<BitsetT>(id))
     {
-        // do not collision check particles
-        return;
+        if(context->manager->getEntityData<BitsetT>(id)->test(8))
+        {
+            // do not collision check particles
+            return;
+        }
+        context->manager->getEntityData<BitsetT>(id)->reset(10);
     }
     float points[8] = {
         pos->x          , pos->y,
@@ -334,6 +364,25 @@ void CommonFns::collDetUpdateY(
                         {
                             context->manager->getEntityData<BitsetT>(cid)->set(7);
                         }
+                    }
+                    else if(context->manager->hasComponent<BitsetT>(id)
+                        && context->manager->hasComponent<BitsetT>(cid)
+                        && ((context->manager->getEntityData<BitsetT>(id)->test(3)
+                                && context->manager->getEntityData<BitsetT>(cid)->test(9))
+                            || (context->manager->getEntityData<BitsetT>(id)->test(9)
+                                && context->manager->getEntityData<BitsetT>(cid)->test(3))))
+                    {
+                        // is colliding with spring
+                        if(context->manager->getEntityData<BitsetT>(id)->test(3))
+                        {
+                            context->manager->getEntityData<BitsetT>(id)->set(10);
+                        }
+                        else
+                        {
+                            context->manager->getEntityData<BitsetT>(cid)->set(10);
+                        }
+                        context->revertPos.insert(id);
+                        context->revertPos.insert(cid);
                     }
                     else
                     {

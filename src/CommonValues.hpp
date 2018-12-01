@@ -13,6 +13,7 @@
 #define GRAVITY_ACC 5000.0f
 #define VEL_DAMPENING 1.4f
 #define JUMP_VEL 2400.0f
+#define JUMP_SPRING_VEL 7000.0f
 #define MOVE_SPEED 120.0f
 
 #define PARTICLE1_GENTIME 0.2f
@@ -31,6 +32,8 @@
  * 6 - is fragment pick-upable (after player no longer collides with it)
  * 7 - collided with player
  * 8 - is particle
+ * 9 - is spring
+ * 10 - is on spring
  */
 using BitsetT = std::bitset<32>;
 
