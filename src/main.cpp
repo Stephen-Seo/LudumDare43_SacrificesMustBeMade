@@ -51,7 +51,7 @@ int main(int argc, char** argv)
     GDT::IntervalBasedGameLoop(
         &isRunning,
         [&isRunning, &window, &context]
-                (float dt) { // update fn
+                (float /*dt*/) { // update fn
             sf::Event event;
             while(window.pollEvent(event))
             {
@@ -155,7 +155,7 @@ int main(int argc, char** argv)
             window.clear();
 
             context.manager.forMatchingSignature<DrawComponents>(
-                [&window, &rect] (std::size_t id, void* ptr, ECStuff::Pos* pos,
+                [&window, &rect] (std::size_t /*id*/, void* /*ptr*/, ECStuff::Pos* pos,
                         ECStuff::Size* size, ECStuff::Drawable* drawable) {
                     rect.setSize(sf::Vector2f(size->w, size->h));
                     rect.setPosition(pos->x, pos->y);

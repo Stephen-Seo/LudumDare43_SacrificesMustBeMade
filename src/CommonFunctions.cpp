@@ -5,7 +5,7 @@
 void CommonFns::cleanupLevel(Context& context)
 {
     context.manager.forMatchingSignature<EC::Meta::TypeList<>>(
-        [&context] (std::size_t id, void* ptr) {
+        [&context] (std::size_t id, void* /*ptr*/) {
             if(context.preserveSet.find(id) == context.preserveSet.end())
             {
                 context.manager.deleteEntity(id);
@@ -150,6 +150,77 @@ void CommonFns::loadLevel(const unsigned int id, Context& context)
         context.manager.getEntityData<BitsetT>(id)->set(4);
     }
         break;
+    case 4:
+    {
+        // ground
+        auto id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 400.0f, 250.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 80.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 300.0f, 250.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 80.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 200.0f, 250.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 80.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
+
+        // death block
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 330.0f, 200.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 40.0f, 40.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 0, 0);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(11);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 230.0f, 200.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 40.0f, 40.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 0, 0);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(11);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 130.0f, 200.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 40.0f, 40.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 0, 0);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(11);
+
+        // spring
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 390.0f, 240.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 10.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 255, 128);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(9);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 290.0f, 240.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 10.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 255, 128);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(9);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 190.0f, 240.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 10.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 255, 128);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(9);
+
+        // ground
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 50.0f, 0.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 10.0f, 180.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
+
+        // exit
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 0.0f, 150.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 30.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 128, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(4);
+    }
+        break;
     default:
         fprintf(stderr, "ERROR: loadLevel got invalid level id!\n");
         break;
@@ -241,7 +312,7 @@ void CommonFns::physUpdateX(
     ECStuff::Pos* pos,
     ECStuff::Vel* vel,
     ECStuff::Acc* acc,
-    ECStuff::Size* size)
+    ECStuff::Size* /*size*/)
 {
     Context* context = (Context*)ptr;
     pos->px = pos->x;
@@ -284,7 +355,7 @@ void CommonFns::collDetUpdateX(
         pos->x,           pos->y + size->h
     };
     context->manager.forMatchingSignature<ColComponents>(
-        [&context, &id, &points] (std::size_t cid, void* ptr,
+        [&context, &id, &points] (std::size_t cid, void* /*ptr*/,
                 ECStuff::Pos* pos, ECStuff::Size* size) {
             if(id != cid)
 //                        && context->revertPos.find(cid) == context->revertPos.end())
@@ -374,12 +445,12 @@ void CommonFns::finUpdateX(
 }
 
 void CommonFns::physUpdateY(
-    std::size_t id,
-    void* ptr,
+    std::size_t /*id*/,
+    void* /*ptr*/,
     ECStuff::Pos* pos,
     ECStuff::Vel* vel,
     ECStuff::Acc* acc,
-    ECStuff::Size* size)
+    ECStuff::Size* /*size*/)
 {
     pos->py = pos->y;
 
@@ -413,7 +484,7 @@ void CommonFns::collDetUpdateY(
         pos->x,           pos->y + size->h
     };
     context->manager.forMatchingSignature<ColComponents>(
-        [&context, &id, &points] (std::size_t cid, void* ptr,
+        [&context, &id, &points] (std::size_t cid, void* /*ptr*/,
                 ECStuff::Pos* pos, ECStuff::Size* size) {
             if(id != cid)
 //                        && context->revertPos.find(cid) == context->revertPos.end())
