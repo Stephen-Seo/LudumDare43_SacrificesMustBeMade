@@ -51,6 +51,7 @@ namespace ECStuff
         unsigned char b;
         unsigned char a;
     };
+
     // tags
 }
 

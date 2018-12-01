@@ -1,5 +1,6 @@
 #include <unordered_set>
 #include <bitset>
+#include <cstdio>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -12,9 +13,16 @@
 #define DELTA_TIME (1.0f / 120.0f)
 #define GRAVITY_ACC 5000.0f
 #define VEL_DAMPENING 1.4f
-#define JUMP_VEL 2000.0f
-#define MOVE_SPEED 100.0f
+#define JUMP_VEL 2400.0f
+#define MOVE_SPEED 120.0f
 
+/*
+ * 0 - move left
+ * 1 - move right
+ * 2 - is grounded
+ * 3 - is player
+ * 4 - is exit
+ */
 using BitsetT = std::bitset<32>;
 
 using AllComponents = EC::Meta::TypeList<
@@ -58,7 +66,59 @@ struct Context
 {
     ManagerT* manager;
     std::unordered_set<std::size_t> revertPos;
+    BitsetT globalFlags;
+
+    /*
+     * globalFlags:
+     * 0 - exit reached
+     */
 };
+
+void resetWorld(const std::unordered_set<std::size_t> preserveSet, ManagerT& manager)
+{
+    manager.forMatchingSignature<EC::Meta::TypeList<>>(
+        [&preserveSet] (std::size_t id, void* ptr) {
+            if(preserveSet.find(id) == preserveSet.end())
+            {
+                ManagerT* manager = (ManagerT*)ptr;
+                manager->deleteEntity(id);
+            }
+        },
+        &manager);
+}
+
+void loadLevel(const unsigned int id, ManagerT& manager)
+{
+    switch(id)
+    {
+    case 0:
+    {
+        auto id = manager.addEntity();
+        manager.addComponent<ECStuff::Pos>(id, 100.0f, 270.0f - 50.0f);
+        manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
+        manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        id = manager.addEntity();
+        manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 100.0f);
+        manager.addComponent<ECStuff::Size>(id, 100.0f, 100.0f);
+        manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        id = manager.addEntity();
+        manager.addComponent<ECStuff::Pos>(id, 300.0f, 270.0f - 150.0f);
+        manager.addComponent<ECStuff::Size>(id, 100.0f, 150.0f);
+        manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+
+        id = manager.addEntity();
+        manager.addComponent<ECStuff::Pos>(id, 435.0f, 270.0f - 40.0f);
+        manager.addComponent<ECStuff::Size>(id, 30.0f, 30.0f);
+        manager.addComponent<ECStuff::Drawable>(id, 128, 128, 255);
+        manager.addComponent<BitsetT>(id);
+        manager.getEntityData<BitsetT>(id)->set(4);
+    }
+        break;
+    default:
+        fprintf(stderr, "ERROR: loadLevel got invalid level id!\n");
+        break;
+    }
+}
 
 int main(int argc, char** argv)
 {
@@ -106,8 +166,8 @@ int main(int argc, char** argv)
             context->manager->forMatchingSignature<ColComponents>(
                 [&context, &id, &points] (std::size_t cid, void* ptr,
                         ECStuff::Pos* pos, ECStuff::Size* size) {
-                    if(id != cid
-                        && context->revertPos.find(cid) == context->revertPos.end())
+                    if(id != cid)
+//                        && context->revertPos.find(cid) == context->revertPos.end())
                     {
                         if(GDT::isWithinPolygon(points, 8, pos->x, pos->y)
                             || GDT::isWithinPolygon(points, 8, pos->x + size->w, pos->y)
@@ -115,9 +175,20 @@ int main(int argc, char** argv)
                             || GDT::isWithinPolygon(points, 8, pos->x, pos->y + size->h)
                             || GDT::isWithinPolygon(points, 8, pos->x + size->w / 2.0f, pos->y + size->h / 2.0f))
                         {
-                            context->revertPos.insert(id);
-                            context->revertPos.insert(cid);
-                            return;
+                            if(context->manager->hasComponent<BitsetT>(id)
+                                && context->manager->hasComponent<BitsetT>(cid)
+                                && ((context->manager->getEntityData<BitsetT>(id)->test(3)
+                                        && context->manager->getEntityData<BitsetT>(cid)->test(4))
+                                    || (context->manager->getEntityData<BitsetT>(id)->test(4)
+                                        && context->manager->getEntityData<BitsetT>(cid)->test(3))))
+                            {
+                                context->globalFlags.set(0);
+                            }
+                            else
+                            {
+                                context->revertPos.insert(id);
+                                context->revertPos.insert(cid);
+                            }
                         }
                     }
                 },
@@ -162,8 +233,8 @@ int main(int argc, char** argv)
             context->manager->forMatchingSignature<ColComponents>(
                 [&context, &id, &points] (std::size_t cid, void* ptr,
                         ECStuff::Pos* pos, ECStuff::Size* size) {
-                    if(id != cid
-                        && context->revertPos.find(cid) == context->revertPos.end())
+                    if(id != cid)
+//                        && context->revertPos.find(cid) == context->revertPos.end())
                     {
                         if(GDT::isWithinPolygon(points, 8, pos->x, pos->y)
                             || GDT::isWithinPolygon(points, 8, pos->x + size->w, pos->y)
@@ -171,9 +242,20 @@ int main(int argc, char** argv)
                             || GDT::isWithinPolygon(points, 8, pos->x, pos->y + size->h)
                             || GDT::isWithinPolygon(points, 8, pos->x + size->w / 2.0f, pos->y + size->h / 2.0f))
                         {
-                            context->revertPos.insert(id);
-                            context->revertPos.insert(cid);
-                            return;
+                            if(context->manager->hasComponent<BitsetT>(id)
+                                && context->manager->hasComponent<BitsetT>(cid)
+                                && ((context->manager->getEntityData<BitsetT>(id)->test(3)
+                                        && context->manager->getEntityData<BitsetT>(cid)->test(4))
+                                    || (context->manager->getEntityData<BitsetT>(id)->test(4)
+                                        && context->manager->getEntityData<BitsetT>(cid)->test(3))))
+                            {
+                                context->globalFlags.set(0);
+                            }
+                            else
+                            {
+                                context->revertPos.insert(id);
+                                context->revertPos.insert(cid);
+                            }
                         }
                     }
                 },
@@ -187,6 +269,10 @@ int main(int argc, char** argv)
             if(context->revertPos.find(id) != context->revertPos.end())
             {
                 vel->y = pos->py - pos->y;
+                if(context->manager->hasComponent<BitsetT>(id) && vel->y < 0.0f)
+                {
+                    context->manager->getEntityData<BitsetT>(id)->set(2);
+                }
                 pos->y = pos->py;
 //                vel->y = 0.0f;
                 context->revertPos.erase(id);
@@ -194,6 +280,8 @@ int main(int argc, char** argv)
         },
         &context);
 
+
+    std::unordered_set<std::size_t> preserveSet;
 
     // create player
     auto playerID = manager.addEntity();
@@ -203,6 +291,8 @@ int main(int argc, char** argv)
     manager.addComponent<ECStuff::Size>(playerID, 50.0f, 50.0f);
     manager.addComponent<ECStuff::Drawable>(playerID);
     manager.addComponent<BitsetT>(playerID);
+    manager.getEntityData<BitsetT>(playerID)->set(3);
+    preserveSet.insert(playerID);
 
     // world boundaries
     {
@@ -211,26 +301,32 @@ int main(int argc, char** argv)
         manager.addComponent<ECStuff::Vel>(id);
         manager.addComponent<ECStuff::Acc>(id);
         manager.addComponent<ECStuff::Size>(id, 50.0f, 270.0f);
+        preserveSet.insert(id);
 
         id = manager.addEntity();
         manager.addComponent<ECStuff::Pos>(id, 0.0f, 270.0f);
         manager.addComponent<ECStuff::Vel>(id);
         manager.addComponent<ECStuff::Acc>(id);
         manager.addComponent<ECStuff::Size>(id, 480.0f, 50.0f);
+        preserveSet.insert(id);
 
         id = manager.addEntity();
         manager.addComponent<ECStuff::Pos>(id, 480.0f, 0.0f);
         manager.addComponent<ECStuff::Vel>(id);
         manager.addComponent<ECStuff::Acc>(id);
         manager.addComponent<ECStuff::Size>(id, 50.0f, 270.0f);
+        preserveSet.insert(id);
 
         id = manager.addEntity();
         manager.addComponent<ECStuff::Pos>(id, 0.0f, -50.0f);
         manager.addComponent<ECStuff::Vel>(id);
         manager.addComponent<ECStuff::Acc>(id);
         manager.addComponent<ECStuff::Size>(id, 480.0f, 50.0f);
+        preserveSet.insert(id);
     }
 
+    unsigned int currentLevel = 0;
+    loadLevel(currentLevel, manager);
 
     sf::Music music;
     if(music.openFromFile("ld43_music.ogg"))
@@ -251,7 +347,8 @@ int main(int argc, char** argv)
     sf::RectangleShape rect;
     GDT::IntervalBasedGameLoop(
         &isRunning,
-        [&isRunning, &manager, &playerID, &window] (float dt) { // update fn
+        [&isRunning, &manager, &playerID, &window, &context,
+                &preserveSet, &currentLevel] (float dt) { // update fn
             sf::Event event;
             while(window.pollEvent(event))
             {
@@ -262,7 +359,12 @@ int main(int argc, char** argv)
                 else if(event.type == sf::Event::KeyPressed
                     && event.key.code == sf::Keyboard::Space)
                 {
-                    manager.getEntityData<ECStuff::Vel>(playerID)->y -= JUMP_VEL;
+                    BitsetT* bitset = manager.getEntityData<BitsetT>(playerID);
+                    if(bitset->test(2))
+                    {
+                        manager.getEntityData<ECStuff::Vel>(playerID)->y -= JUMP_VEL;
+                        bitset->reset(2);
+                    }
                 }
                 else if(event.type == sf::Event::KeyPressed
                     && (event.key.code == sf::Keyboard::A
@@ -290,6 +392,12 @@ int main(int argc, char** argv)
                 }
             }
             manager.callForMatchingFunctions();
+            if(context.globalFlags.test(0))
+            {
+                context.globalFlags.reset(0);
+                resetWorld(preserveSet, manager);
+                loadLevel(++currentLevel, manager);
+            }
         },
         [&manager, &window, &rect] () { // draw fn
             window.clear();
