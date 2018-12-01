@@ -93,10 +93,12 @@ struct Context
     std::vector<sf::Sound> soundPool;
     std::size_t playerID;
     std::default_random_engine rng;
+    unsigned int currentSize;
 
     /*
      * globalFlags:
      * 0 - exit reached
+     * 1 - is player dead
      */
 
     /*
@@ -166,6 +168,14 @@ void loadLevel(const unsigned int id, ManagerT& manager)
         manager.getEntityData<BitsetT>(id)->set(4);
     }
         break;
+    case 1:
+    {
+        auto id = manager.addEntity();
+        manager.addComponent<ECStuff::Pos>(id, 300.0f, 270.0f - 50.0f);
+        manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
+        manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+    }
+        break;
     default:
         fprintf(stderr, "ERROR: loadLevel got invalid level id!\n");
         break;
@@ -175,6 +185,7 @@ void loadLevel(const unsigned int id, ManagerT& manager)
 int main(int argc, char** argv)
 {
     Context context;
+    context.currentSize = 50;
 
     // sounds
     context.soundPool.resize(7);
@@ -407,16 +418,18 @@ int main(int argc, char** argv)
             {
                 if(bitset->test(7))
                 {
-                    if(bitset->test(6))
+                    Context* context = (Context*)ptr;
+                    if(bitset->test(6) && !context->globalFlags.test(1))
                     {
-                        Context* context = (Context*)ptr;
+                        // player touched fragment, increase player
                         context->manager->deleteEntity(id);
                         ECStuff::Pos* ppos = context->manager->getEntityData<ECStuff::Pos>(context->playerID);
                         ECStuff::Size* psize = context->manager->getEntityData<ECStuff::Size>(context->playerID);
-                        ppos->x -= 1.0f;
+                        ppos->x -= 0.5f;
                         ppos->y -= 1.0f;
-                        psize->w += 1.0f;
-                        psize->h += 1.0f;
+                        context->currentSize += 1;
+                        psize->w = context->currentSize;
+                        psize->h = context->currentSize;
                     }
                     bitset->reset(7);
                 }
@@ -490,6 +503,7 @@ int main(int argc, char** argv)
     manager.getEntityData<BitsetT>(playerID)->set(3);
     preserveSet.insert(playerID);
     context.playerID = playerID;
+    context.globalFlags.reset(1);
 
     // world boundaries
     {
@@ -554,7 +568,8 @@ int main(int argc, char** argv)
                     isRunning = false;
                 }
                 else if(event.type == sf::Event::KeyPressed
-                    && event.key.code == sf::Keyboard::Space)
+                    && event.key.code == sf::Keyboard::Space
+                    && !context.globalFlags.test(1))
                 {
                     BitsetT* bitset = manager.getEntityData<BitsetT>(playerID);
                     if(bitset->test(2))
@@ -578,33 +593,44 @@ int main(int argc, char** argv)
                         manager.addComponent<ECStuff::ParticleGen>(id, 1);
 
                         // reduce player
+                        context.currentSize -= 1;
+                        if(context.currentSize <= 1)
+                        {
+                            // player reduced too much, player now dead
+                            manager.deleteEntity(playerID);
+                            context.globalFlags.set(1);
+                        }
                         ppos->x += 0.5f;
                         ppos->y += 0.5f;
-                        psize->w -= 1.0f;
-                        psize->h -= 1.0f;
+                        psize->w = context.currentSize;
+                        psize->h = context.currentSize;
                     }
                 }
                 else if(event.type == sf::Event::KeyPressed
                     && (event.key.code == sf::Keyboard::A
-                        || event.key.code == sf::Keyboard::Left))
+                        || event.key.code == sf::Keyboard::Left)
+                    && !context.globalFlags.test(1))
                 {
                     manager.getEntityData<BitsetT>(playerID)->set(0);
                 }
                 else if(event.type == sf::Event::KeyReleased
                     && (event.key.code == sf::Keyboard::A
-                        || event.key.code == sf::Keyboard::Left))
+                        || event.key.code == sf::Keyboard::Left)
+                    && !context.globalFlags.test(1))
                 {
                     manager.getEntityData<BitsetT>(playerID)->reset(0);
                 }
                 else if(event.type == sf::Event::KeyPressed
                     && (event.key.code == sf::Keyboard::D
-                        || event.key.code == sf::Keyboard::Right))
+                        || event.key.code == sf::Keyboard::Right)
+                    && !context.globalFlags.test(1))
                 {
                     manager.getEntityData<BitsetT>(playerID)->set(1);
                 }
                 else if(event.type == sf::Event::KeyReleased
                     && (event.key.code == sf::Keyboard::D
-                        || event.key.code == sf::Keyboard::Right))
+                        || event.key.code == sf::Keyboard::Right)
+                    && !context.globalFlags.test(1))
                 {
                     manager.getEntityData<BitsetT>(playerID)->reset(1);
                 }
