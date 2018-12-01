@@ -87,7 +87,7 @@ using ManagerT = EC::Manager<AllComponents, AllTags>;
 
 struct Context
 {
-    ManagerT* manager;
+    ManagerT manager;
     std::unordered_set<std::size_t> revertPos;
     BitsetT globalFlags;
     std::unordered_map<unsigned int, sf::SoundBuffer> sfxMap;

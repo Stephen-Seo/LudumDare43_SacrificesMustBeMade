@@ -2,79 +2,78 @@
 
 #include <GDT/CollisionDetection.hpp>
 
-void CommonFns::cleanupLevel(const std::unordered_set<std::size_t> preserveSet, ManagerT& manager)
+void CommonFns::cleanupLevel(Context& context)
 {
-    manager.forMatchingSignature<EC::Meta::TypeList<>>(
-        [&preserveSet] (std::size_t id, void* ptr) {
-            if(preserveSet.find(id) == preserveSet.end())
+    context.manager.forMatchingSignature<EC::Meta::TypeList<>>(
+        [&context] (std::size_t id, void* ptr) {
+            if(context.preserveSet.find(id) == context.preserveSet.end())
             {
-                ManagerT* manager = (ManagerT*)ptr;
-                manager->deleteEntity(id);
+                context.manager.deleteEntity(id);
             }
         },
-        &manager);
+        nullptr);
 }
 
-void CommonFns::loadLevel(const unsigned int id, ManagerT& manager)
+void CommonFns::loadLevel(const unsigned int id, Context& context)
 {
     switch(id)
     {
     case 0:
     {
         // ground
-        auto id = manager.addEntity();
-        manager.addComponent<ECStuff::Pos>(id, 100.0f, 270.0f - 50.0f);
-        manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
-        manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
-        id = manager.addEntity();
-        manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 100.0f);
-        manager.addComponent<ECStuff::Size>(id, 100.0f, 100.0f);
-        manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
-        id = manager.addEntity();
-        manager.addComponent<ECStuff::Pos>(id, 300.0f, 270.0f - 150.0f);
-        manager.addComponent<ECStuff::Size>(id, 100.0f, 150.0f);
-        manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        auto id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 100.0f, 270.0f - 50.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 100.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 100.0f, 100.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 300.0f, 270.0f - 150.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 100.0f, 150.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
 
         // exit
-        id = manager.addEntity();
-        manager.addComponent<ECStuff::Pos>(id, 435.0f, 270.0f - 40.0f);
-        manager.addComponent<ECStuff::Size>(id, 30.0f, 30.0f);
-        manager.addComponent<ECStuff::Drawable>(id, 128, 128, 255);
-        manager.addComponent<BitsetT>(id);
-        manager.getEntityData<BitsetT>(id)->set(4);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 435.0f, 270.0f - 40.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 30.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 128, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(4);
     }
         break;
     case 1:
     {
         // ground
-        auto id = manager.addEntity();
-        manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 50.0f);
-        manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
-        manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
-        id = manager.addEntity();
-        manager.addComponent<ECStuff::Pos>(id, 80.0f, 270.0f - 150.0f);
-        manager.addComponent<ECStuff::Size>(id, 400.0f, 10.0f);
-        manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
-        id = manager.addEntity();
-        manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 200.0f);
-        manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
-        manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        auto id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 50.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 80.0f, 270.0f - 150.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 400.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 200.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
 
         // spring
-        id = manager.addEntity();
-        manager.addComponent<ECStuff::Pos>(id, 10.0f, 270.0f - 20.0f);
-        manager.addComponent<ECStuff::Size>(id, 50.0f, 20.0f);
-        manager.addComponent<ECStuff::Drawable>(id, 128, 255, 128);
-        manager.addComponent<BitsetT>(id);
-        manager.getEntityData<BitsetT>(id)->set(9);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 10.0f, 270.0f - 20.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 50.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 255, 128);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(9);
 
         //exit
-        id = manager.addEntity();
-        manager.addComponent<ECStuff::Pos>(id, 435.0f, 30.0f);
-        manager.addComponent<ECStuff::Size>(id, 30.0f, 30.0f);
-        manager.addComponent<ECStuff::Drawable>(id, 128, 128, 255);
-        manager.addComponent<BitsetT>(id);
-        manager.getEntityData<BitsetT>(id)->set(4);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 435.0f, 30.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 30.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 128, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(4);
     }
         break;
     default:
@@ -83,81 +82,81 @@ void CommonFns::loadLevel(const unsigned int id, ManagerT& manager)
     }
 }
 
-void CommonFns::resetWorld(ManagerT& manager, Context& context)
+void CommonFns::resetWorld(Context& context)
 {
-    manager.reset();
-    loadManagerFns(manager, &context);
+    context.manager.reset();
+    loadManagerFns(&context);
     context.preserveSet.clear();
     context.currentLevel = 0;
     context.currentSize = 50;
 
     // create player
-    auto playerID = manager.addEntity();
-    manager.addComponent<ECStuff::Pos>(playerID, 2.0f, 200.0f);
-    manager.addComponent<ECStuff::Vel>(playerID);
-    manager.addComponent<ECStuff::Acc>(playerID, 0.0f, GRAVITY_ACC);
-    manager.addComponent<ECStuff::Size>(playerID, 50.0f, 50.0f);
-    manager.addComponent<ECStuff::Drawable>(playerID);
-    manager.addComponent<BitsetT>(playerID);
-    manager.getEntityData<BitsetT>(playerID)->set(3);
+    auto playerID = context.manager.addEntity();
+    context.manager.addComponent<ECStuff::Pos>(playerID, 2.0f, 200.0f);
+    context.manager.addComponent<ECStuff::Vel>(playerID);
+    context.manager.addComponent<ECStuff::Acc>(playerID, 0.0f, GRAVITY_ACC);
+    context.manager.addComponent<ECStuff::Size>(playerID, 50.0f, 50.0f);
+    context.manager.addComponent<ECStuff::Drawable>(playerID);
+    context.manager.addComponent<BitsetT>(playerID);
+    context.manager.getEntityData<BitsetT>(playerID)->set(3);
     context.preserveSet.insert(playerID);
     context.playerID = playerID;
     context.globalFlags.reset(1);
 
     // create world boundaries
-    auto id = manager.addEntity();
-    manager.addComponent<ECStuff::Pos>(id, -50.0f, 0.0f);
-    manager.addComponent<ECStuff::Vel>(id);
-    manager.addComponent<ECStuff::Acc>(id);
-    manager.addComponent<ECStuff::Size>(id, 50.0f, 270.0f);
+    auto id = context.manager.addEntity();
+    context.manager.addComponent<ECStuff::Pos>(id, -50.0f, 0.0f);
+    context.manager.addComponent<ECStuff::Vel>(id);
+    context.manager.addComponent<ECStuff::Acc>(id);
+    context.manager.addComponent<ECStuff::Size>(id, 50.0f, 270.0f);
     context.preserveSet.insert(id);
 
-    id = manager.addEntity();
-    manager.addComponent<ECStuff::Pos>(id, 0.0f, 270.0f);
-    manager.addComponent<ECStuff::Vel>(id);
-    manager.addComponent<ECStuff::Acc>(id);
-    manager.addComponent<ECStuff::Size>(id, 480.0f, 50.0f);
+    id = context.manager.addEntity();
+    context.manager.addComponent<ECStuff::Pos>(id, 0.0f, 270.0f);
+    context.manager.addComponent<ECStuff::Vel>(id);
+    context.manager.addComponent<ECStuff::Acc>(id);
+    context.manager.addComponent<ECStuff::Size>(id, 480.0f, 50.0f);
     context.preserveSet.insert(id);
 
-    id = manager.addEntity();
-    manager.addComponent<ECStuff::Pos>(id, 480.0f, 0.0f);
-    manager.addComponent<ECStuff::Vel>(id);
-    manager.addComponent<ECStuff::Acc>(id);
-    manager.addComponent<ECStuff::Size>(id, 50.0f, 270.0f);
+    id = context.manager.addEntity();
+    context.manager.addComponent<ECStuff::Pos>(id, 480.0f, 0.0f);
+    context.manager.addComponent<ECStuff::Vel>(id);
+    context.manager.addComponent<ECStuff::Acc>(id);
+    context.manager.addComponent<ECStuff::Size>(id, 50.0f, 270.0f);
     context.preserveSet.insert(id);
 
-    id = manager.addEntity();
-    manager.addComponent<ECStuff::Pos>(id, 0.0f, -50.0f);
-    manager.addComponent<ECStuff::Vel>(id);
-    manager.addComponent<ECStuff::Acc>(id);
-    manager.addComponent<ECStuff::Size>(id, 480.0f, 50.0f);
+    id = context.manager.addEntity();
+    context.manager.addComponent<ECStuff::Pos>(id, 0.0f, -50.0f);
+    context.manager.addComponent<ECStuff::Vel>(id);
+    context.manager.addComponent<ECStuff::Acc>(id);
+    context.manager.addComponent<ECStuff::Size>(id, 480.0f, 50.0f);
     context.preserveSet.insert(id);
 }
 
-void CommonFns::loadManagerFns(ManagerT& manager, Context* context)
+void CommonFns::loadManagerFns(Context* context)
 {
-    manager.addForMatchingFunction<PhysComponents>(
+    context->manager.addForMatchingFunction<PhysComponents>(
         CommonFns::physUpdateX,
         context);
-    manager.addForMatchingFunction<ColComponents>(
+    context->manager.addForMatchingFunction<ColComponents>(
         CommonFns::collDetUpdateX,
         context);
-    manager.addForMatchingFunction<ColFinComponents>(
+    context->manager.addForMatchingFunction<ColFinComponents>(
         CommonFns::finUpdateX,
         context);
-    manager.addForMatchingFunction<PhysComponents>(
+    context->manager.addForMatchingFunction<PhysComponents>(
         CommonFns::physUpdateY,
         context);
-    manager.addForMatchingFunction<ColComponents>(
+    context->manager.addForMatchingFunction<ColComponents>(
         CommonFns::collDetUpdateY,
         context);
-    manager.addForMatchingFunction<ColFinComponents>(
+    context->manager.addForMatchingFunction<ColFinComponents>(
         CommonFns::finUpdateY,
         context);
-    manager.addForMatchingFunction<FragmentComponents>(
+    context->manager.addForMatchingFunction<FragmentComponents>(
         CommonFns::updateFragments,
         context);
-    manager.addForMatchingFunction<ParticleComponents>(
+    context->manager.addForMatchingFunction<ParticleComponents>(
         CommonFns::updateParticles,
         context);
 }
@@ -174,9 +173,9 @@ void CommonFns::physUpdateX(
     pos->px = pos->x;
 
     vel->x += acc->x * DELTA_TIME;
-    if(context->manager->hasComponent<BitsetT>(id))
+    if(context->manager.hasComponent<BitsetT>(id))
     {
-        BitsetT* bitset = context->manager->getEntityData<BitsetT>(id);
+        BitsetT* bitset = context->manager.getEntityData<BitsetT>(id);
         if(bitset->test(0) && !bitset->test(1) && vel->x > -MOVE_SPEED)
         {
             vel->x = -MOVE_SPEED;
@@ -198,8 +197,8 @@ void CommonFns::collDetUpdateX(
     ECStuff::Size* size)
 {
     Context* context = (Context*)ptr;
-    if(context->manager->hasComponent<BitsetT>(id)
-        && context->manager->getEntityData<BitsetT>(id)->test(8))
+    if(context->manager.hasComponent<BitsetT>(id)
+        && context->manager.getEntityData<BitsetT>(id)->test(8))
     {
         // do not collision check particles
         return;
@@ -210,14 +209,14 @@ void CommonFns::collDetUpdateX(
         pos->x + size->w, pos->y + size->h,
         pos->x,           pos->y + size->h
     };
-    context->manager->forMatchingSignature<ColComponents>(
+    context->manager.forMatchingSignature<ColComponents>(
         [&context, &id, &points] (std::size_t cid, void* ptr,
                 ECStuff::Pos* pos, ECStuff::Size* size) {
             if(id != cid)
 //                        && context->revertPos.find(cid) == context->revertPos.end())
             {
-                if(context->manager->hasComponent<BitsetT>(cid)
-                    && context->manager->getEntityData<BitsetT>(cid)->test(8))
+                if(context->manager.hasComponent<BitsetT>(cid)
+                    && context->manager.getEntityData<BitsetT>(cid)->test(8))
                 {
                     // do not collision check particles
                     return;
@@ -228,31 +227,31 @@ void CommonFns::collDetUpdateX(
                     || GDT::isWithinPolygon(points, 8, pos->x, pos->y + size->h)
                     || GDT::isWithinPolygon(points, 8, pos->x + size->w / 2.0f, pos->y + size->h / 2.0f))
                 {
-                    if(context->manager->hasComponent<BitsetT>(id)
-                        && context->manager->hasComponent<BitsetT>(cid)
-                        && ((context->manager->getEntityData<BitsetT>(id)->test(3)
-                                && context->manager->getEntityData<BitsetT>(cid)->test(4))
-                            || (context->manager->getEntityData<BitsetT>(id)->test(4)
-                                && context->manager->getEntityData<BitsetT>(cid)->test(3))))
+                    if(context->manager.hasComponent<BitsetT>(id)
+                        && context->manager.hasComponent<BitsetT>(cid)
+                        && ((context->manager.getEntityData<BitsetT>(id)->test(3)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(4))
+                            || (context->manager.getEntityData<BitsetT>(id)->test(4)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(3))))
                     {
                         // is colliding with exit
                         context->globalFlags.set(0);
                     }
-                    else if(context->manager->hasComponent<BitsetT>(id)
-                        && context->manager->hasComponent<BitsetT>(cid)
-                        && ((context->manager->getEntityData<BitsetT>(id)->test(3)
-                                && context->manager->getEntityData<BitsetT>(cid)->test(5))
-                            || (context->manager->getEntityData<BitsetT>(id)->test(5)
-                                && context->manager->getEntityData<BitsetT>(cid)->test(3))))
+                    else if(context->manager.hasComponent<BitsetT>(id)
+                        && context->manager.hasComponent<BitsetT>(cid)
+                        && ((context->manager.getEntityData<BitsetT>(id)->test(3)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(5))
+                            || (context->manager.getEntityData<BitsetT>(id)->test(5)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(3))))
                     {
                         // is colliding with fragment
-                        if(context->manager->getEntityData<BitsetT>(id)->test(5))
+                        if(context->manager.getEntityData<BitsetT>(id)->test(5))
                         {
-                            context->manager->getEntityData<BitsetT>(id)->set(7);
+                            context->manager.getEntityData<BitsetT>(id)->set(7);
                         }
                         else
                         {
-                            context->manager->getEntityData<BitsetT>(cid)->set(7);
+                            context->manager.getEntityData<BitsetT>(cid)->set(7);
                         }
                     }
                     else
@@ -305,14 +304,15 @@ void CommonFns::collDetUpdateY(
     ECStuff::Size* size)
 {
     Context* context = (Context*)ptr;
-    if(context->manager->hasComponent<BitsetT>(id))
+    if(context->manager.hasComponent<BitsetT>(id))
     {
-        if(context->manager->getEntityData<BitsetT>(id)->test(8))
+        if(context->manager.getEntityData<BitsetT>(id)->test(8))
         {
             // do not collision check particles
             return;
         }
-        context->manager->getEntityData<BitsetT>(id)->reset(10);
+        context->manager.getEntityData<BitsetT>(id)->reset(10);
+        context->manager.getEntityData<BitsetT>(id)->reset(2);
     }
     float points[8] = {
         pos->x          , pos->y,
@@ -320,14 +320,14 @@ void CommonFns::collDetUpdateY(
         pos->x + size->w, pos->y + size->h,
         pos->x,           pos->y + size->h
     };
-    context->manager->forMatchingSignature<ColComponents>(
+    context->manager.forMatchingSignature<ColComponents>(
         [&context, &id, &points] (std::size_t cid, void* ptr,
                 ECStuff::Pos* pos, ECStuff::Size* size) {
             if(id != cid)
 //                        && context->revertPos.find(cid) == context->revertPos.end())
             {
-                if(context->manager->hasComponent<BitsetT>(cid)
-                    && context->manager->getEntityData<BitsetT>(cid)->test(8))
+                if(context->manager.hasComponent<BitsetT>(cid)
+                    && context->manager.getEntityData<BitsetT>(cid)->test(8))
                 {
                     // do not collision check particles
                     return;
@@ -338,48 +338,48 @@ void CommonFns::collDetUpdateY(
                     || GDT::isWithinPolygon(points, 8, pos->x, pos->y + size->h)
                     || GDT::isWithinPolygon(points, 8, pos->x + size->w / 2.0f, pos->y + size->h / 2.0f))
                 {
-                    if(context->manager->hasComponent<BitsetT>(id)
-                        && context->manager->hasComponent<BitsetT>(cid)
-                        && ((context->manager->getEntityData<BitsetT>(id)->test(3)
-                                && context->manager->getEntityData<BitsetT>(cid)->test(4))
-                            || (context->manager->getEntityData<BitsetT>(id)->test(4)
-                                && context->manager->getEntityData<BitsetT>(cid)->test(3))))
+                    if(context->manager.hasComponent<BitsetT>(id)
+                        && context->manager.hasComponent<BitsetT>(cid)
+                        && ((context->manager.getEntityData<BitsetT>(id)->test(3)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(4))
+                            || (context->manager.getEntityData<BitsetT>(id)->test(4)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(3))))
                     {
                         // is colliding with exit
                         context->globalFlags.set(0);
                     }
-                    else if(context->manager->hasComponent<BitsetT>(id)
-                        && context->manager->hasComponent<BitsetT>(cid)
-                        && ((context->manager->getEntityData<BitsetT>(id)->test(3)
-                                && context->manager->getEntityData<BitsetT>(cid)->test(5))
-                            || (context->manager->getEntityData<BitsetT>(id)->test(5)
-                                && context->manager->getEntityData<BitsetT>(cid)->test(3))))
+                    else if(context->manager.hasComponent<BitsetT>(id)
+                        && context->manager.hasComponent<BitsetT>(cid)
+                        && ((context->manager.getEntityData<BitsetT>(id)->test(3)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(5))
+                            || (context->manager.getEntityData<BitsetT>(id)->test(5)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(3))))
                     {
                         // is colliding with fragment
-                        if(context->manager->getEntityData<BitsetT>(id)->test(5))
+                        if(context->manager.getEntityData<BitsetT>(id)->test(5))
                         {
-                            context->manager->getEntityData<BitsetT>(id)->set(7);
+                            context->manager.getEntityData<BitsetT>(id)->set(7);
                         }
                         else
                         {
-                            context->manager->getEntityData<BitsetT>(cid)->set(7);
+                            context->manager.getEntityData<BitsetT>(cid)->set(7);
                         }
                     }
-                    else if(context->manager->hasComponent<BitsetT>(id)
-                        && context->manager->hasComponent<BitsetT>(cid)
-                        && ((context->manager->getEntityData<BitsetT>(id)->test(3)
-                                && context->manager->getEntityData<BitsetT>(cid)->test(9))
-                            || (context->manager->getEntityData<BitsetT>(id)->test(9)
-                                && context->manager->getEntityData<BitsetT>(cid)->test(3))))
+                    else if(context->manager.hasComponent<BitsetT>(id)
+                        && context->manager.hasComponent<BitsetT>(cid)
+                        && ((context->manager.getEntityData<BitsetT>(id)->test(3)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(9))
+                            || (context->manager.getEntityData<BitsetT>(id)->test(9)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(3))))
                     {
                         // is colliding with spring
-                        if(context->manager->getEntityData<BitsetT>(id)->test(3))
+                        if(context->manager.getEntityData<BitsetT>(id)->test(3))
                         {
-                            context->manager->getEntityData<BitsetT>(id)->set(10);
+                            context->manager.getEntityData<BitsetT>(id)->set(10);
                         }
                         else
                         {
-                            context->manager->getEntityData<BitsetT>(cid)->set(10);
+                            context->manager.getEntityData<BitsetT>(cid)->set(10);
                         }
                         context->revertPos.insert(id);
                         context->revertPos.insert(cid);
@@ -405,9 +405,9 @@ void CommonFns::finUpdateY(
     if(context->revertPos.find(id) != context->revertPos.end())
     {
         vel->y = pos->py - pos->y;
-        if(context->manager->hasComponent<BitsetT>(id) && vel->y < 0.0f)
+        if(context->manager.hasComponent<BitsetT>(id) && vel->y < 0.0f)
         {
-            context->manager->getEntityData<BitsetT>(id)->set(2);
+            context->manager.getEntityData<BitsetT>(id)->set(2);
         }
         pos->y = pos->py;
 //                vel->y = 0.0f;
@@ -425,9 +425,9 @@ void CommonFns::updateFragments(std::size_t id, void* ptr, BitsetT* bitset)
             if(bitset->test(6) && !context->globalFlags.test(1))
             {
                 // player touched fragment, increase player
-                context->manager->deleteEntity(id);
-                ECStuff::Pos* ppos = context->manager->getEntityData<ECStuff::Pos>(context->playerID);
-                ECStuff::Size* psize = context->manager->getEntityData<ECStuff::Size>(context->playerID);
+                context->manager.deleteEntity(id);
+                ECStuff::Pos* ppos = context->manager.getEntityData<ECStuff::Pos>(context->playerID);
+                ECStuff::Size* psize = context->manager.getEntityData<ECStuff::Size>(context->playerID);
                 ppos->x -= 0.5f;
                 ppos->y -= 1.0f;
                 context->currentSize += 1;
@@ -457,7 +457,7 @@ void CommonFns::updateParticles(
         particle->timer -= DELTA_TIME;
         if(particle->timer <= 0.0f)
         {
-            context->manager->deleteEntity(id);
+            context->manager.deleteEntity(id);
         }
         break;
     case 1:
@@ -465,28 +465,28 @@ void CommonFns::updateParticles(
         if(particle->timer <= 0.0f)
         {
             particle->timer = PARTICLE1_GENTIME;
-            auto pid = context->manager->addEntity();
-            context->manager->addComponent<ECStuff::Pos>(pid,
+            auto pid = context->manager.addEntity();
+            context->manager.addComponent<ECStuff::Pos>(pid,
                 pos->x + size->w / 2.0f,
                 pos->y + size->h / 2.0f);
-            context->manager->addComponent<ECStuff::Vel>(pid,
+            context->manager.addComponent<ECStuff::Vel>(pid,
                 std::uniform_real_distribution<float>(
                     -RNG_PART_VEL, RNG_PART_VEL)(context->rng),
                 std::uniform_real_distribution<float>(
                     -RNG_PART_VEL, RNG_PART_VEL)(context->rng));
-            context->manager->addComponent<ECStuff::Acc>(pid,
+            context->manager.addComponent<ECStuff::Acc>(pid,
                 std::uniform_real_distribution<float>(
                     -RNG_PART_ACC, RNG_PART_ACC)(context->rng),
                 std::uniform_real_distribution<float>(
                     -RNG_PART_ACC, RNG_PART_ACC)(context->rng));
-            context->manager->addComponent<ECStuff::Size>(pid,
+            context->manager.addComponent<ECStuff::Size>(pid,
                 1.0f, 1.0f);
-            context->manager->addComponent<ECStuff::ParticleGen>(pid);
-            context->manager->getEntityData<ECStuff::ParticleGen>(pid)->timer = PARTICLE1_GEN_LIFETIME;
-            context->manager->addComponent<ECStuff::Drawable>(pid,
+            context->manager.addComponent<ECStuff::ParticleGen>(pid);
+            context->manager.getEntityData<ECStuff::ParticleGen>(pid)->timer = PARTICLE1_GEN_LIFETIME;
+            context->manager.addComponent<ECStuff::Drawable>(pid,
                 255, 255, 255, 255);
-            context->manager->addComponent<BitsetT>(pid);
-            context->manager->getEntityData<BitsetT>(pid)->set(8);
+            context->manager.addComponent<BitsetT>(pid);
+            context->manager.getEntityData<BitsetT>(pid)->set(8);
         }
         break;
     default:

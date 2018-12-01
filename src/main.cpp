@@ -24,13 +24,9 @@ int main(int argc, char** argv)
     context.sfxMap.insert(std::make_pair(1, sf::SoundBuffer{}));
     context.sfxMap.at(1).loadFromFile("sfx_jump.ogg");
 
-    // set up manager
-    ManagerT manager;
-    context.manager = &manager;
-
     // create world
-    CommonFns::resetWorld(manager, context);
-    CommonFns::loadLevel(context.currentLevel, manager);
+    CommonFns::resetWorld(context);
+    CommonFns::loadLevel(context.currentLevel, context);
 
     sf::Music music;
     if(music.openFromFile("ld43_music.ogg"))
@@ -51,7 +47,7 @@ int main(int argc, char** argv)
     sf::RectangleShape rect;
     GDT::IntervalBasedGameLoop(
         &isRunning,
-        [&isRunning, &manager, &window, &context]
+        [&isRunning, &window, &context]
                 (float dt) { // update fn
             sf::Event event;
             while(window.pollEvent(event))
@@ -64,41 +60,41 @@ int main(int argc, char** argv)
                     && event.key.code == sf::Keyboard::Space
                     && !context.globalFlags.test(1))
                 {
-                    BitsetT* bitset = manager.getEntityData<BitsetT>(context.playerID);
+                    BitsetT* bitset = context.manager.getEntityData<BitsetT>(context.playerID);
                     if(bitset->test(2))
                     {
                         context.playSfx(1);
                         if(bitset->test(10))
                         {
-                            manager.getEntityData<ECStuff::Vel>(context.playerID)->y -= JUMP_SPRING_VEL;
+                            context.manager.getEntityData<ECStuff::Vel>(context.playerID)->y -= JUMP_SPRING_VEL;
                             bitset->reset(10);
                         }
                         else
                         {
-                            manager.getEntityData<ECStuff::Vel>(context.playerID)->y -= JUMP_VEL;
+                            context.manager.getEntityData<ECStuff::Vel>(context.playerID)->y -= JUMP_VEL;
                         }
                         bitset->reset(2);
 
                         // create fragment
-                        auto id = manager.addEntity();
-                        ECStuff::Pos* ppos = manager.getEntityData<ECStuff::Pos>(context.playerID);
-                        ECStuff::Size* psize = manager.getEntityData<ECStuff::Size>(context.playerID);
-                        manager.addComponent<ECStuff::Pos>(id,
+                        auto id = context.manager.addEntity();
+                        ECStuff::Pos* ppos = context.manager.getEntityData<ECStuff::Pos>(context.playerID);
+                        ECStuff::Size* psize = context.manager.getEntityData<ECStuff::Size>(context.playerID);
+                        context.manager.addComponent<ECStuff::Pos>(id,
                             ppos->x + psize->w / 2.0f - 2.0f,
                             ppos->y + psize->h * 3.0f / 4.0f - 2.0f);
-                        manager.addComponent<ECStuff::Size>(id, 4.0f, 4.0f);
-                        manager.addComponent<BitsetT>(id);
-                        manager.getEntityData<BitsetT>(id)->set(5);
-                        manager.getEntityData<BitsetT>(id)->set(7);
-                        manager.addComponent<ECStuff::Drawable>(id);
-                        manager.addComponent<ECStuff::ParticleGen>(id, 1);
+                        context.manager.addComponent<ECStuff::Size>(id, 4.0f, 4.0f);
+                        context.manager.addComponent<BitsetT>(id);
+                        context.manager.getEntityData<BitsetT>(id)->set(5);
+                        context.manager.getEntityData<BitsetT>(id)->set(7);
+                        context.manager.addComponent<ECStuff::Drawable>(id);
+                        context.manager.addComponent<ECStuff::ParticleGen>(id, 1);
 
                         // reduce player
                         context.currentSize -= 1;
                         if(context.currentSize <= 1)
                         {
                             // player reduced too much, player now dead
-                            manager.deleteEntity(context.playerID);
+                            context.manager.deleteEntity(context.playerID);
                             context.globalFlags.set(1);
                         }
                         ppos->x += 0.5f;
@@ -112,49 +108,49 @@ int main(int argc, char** argv)
                         || event.key.code == sf::Keyboard::Left)
                     && !context.globalFlags.test(1))
                 {
-                    manager.getEntityData<BitsetT>(context.playerID)->set(0);
+                    context.manager.getEntityData<BitsetT>(context.playerID)->set(0);
                 }
                 else if(event.type == sf::Event::KeyReleased
                     && (event.key.code == sf::Keyboard::A
                         || event.key.code == sf::Keyboard::Left)
                     && !context.globalFlags.test(1))
                 {
-                    manager.getEntityData<BitsetT>(context.playerID)->reset(0);
+                    context.manager.getEntityData<BitsetT>(context.playerID)->reset(0);
                 }
                 else if(event.type == sf::Event::KeyPressed
                     && (event.key.code == sf::Keyboard::D
                         || event.key.code == sf::Keyboard::Right)
                     && !context.globalFlags.test(1))
                 {
-                    manager.getEntityData<BitsetT>(context.playerID)->set(1);
+                    context.manager.getEntityData<BitsetT>(context.playerID)->set(1);
                 }
                 else if(event.type == sf::Event::KeyReleased
                     && (event.key.code == sf::Keyboard::D
                         || event.key.code == sf::Keyboard::Right)
                     && !context.globalFlags.test(1))
                 {
-                    manager.getEntityData<BitsetT>(context.playerID)->reset(1);
+                    context.manager.getEntityData<BitsetT>(context.playerID)->reset(1);
                 }
                 else if(event.type == sf::Event::KeyPressed
                     && event.key.code == sf::Keyboard::Escape)
                 {
-                    CommonFns::resetWorld(manager, context);
-                    CommonFns::loadLevel(context.currentLevel, manager);
+                    CommonFns::resetWorld(context);
+                    CommonFns::loadLevel(context.currentLevel, context);
                 }
             }
-            manager.callForMatchingFunctions();
+            context.manager.callForMatchingFunctions();
             if(context.globalFlags.test(0))
             {
                 context.globalFlags.reset(0);
                 context.playSfx(0);
-                CommonFns::cleanupLevel(context.preserveSet, manager);
-                CommonFns::loadLevel(++context.currentLevel, manager);
+                CommonFns::cleanupLevel(context);
+                CommonFns::loadLevel(++context.currentLevel, context);
             }
         },
-        [&manager, &window, &rect] () { // draw fn
+        [&context, &window, &rect] () { // draw fn
             window.clear();
 
-            manager.forMatchingSignature<DrawComponents>(
+            context.manager.forMatchingSignature<DrawComponents>(
                 [&window, &rect] (std::size_t id, void* ptr, ECStuff::Pos* pos,
                         ECStuff::Size* size, ECStuff::Drawable* drawable) {
                     rect.setSize(sf::Vector2f(size->w, size->h));

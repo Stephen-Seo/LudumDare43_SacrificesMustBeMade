@@ -5,13 +5,13 @@
 
 namespace CommonFns
 {
-    void cleanupLevel(const std::unordered_set<std::size_t> preserveSet, ManagerT& manager);
+    void cleanupLevel(Context& context);
 
-    void loadLevel(const unsigned int id, ManagerT& manager);
+    void loadLevel(const unsigned int id, Context& context);
 
-    void resetWorld(ManagerT& manager, Context& context);
+    void resetWorld(Context& context);
 
-    void loadManagerFns(ManagerT& manager, Context* context);
+    void loadManagerFns(Context* context);
 
     void physUpdateX(std::size_t id, void* ptr,
         ECStuff::Pos* pos, ECStuff::Vel* vel,
