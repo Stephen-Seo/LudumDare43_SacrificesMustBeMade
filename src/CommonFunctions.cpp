@@ -401,6 +401,121 @@ void CommonFns::loadLevel(const unsigned int id, Context& context)
         context.manager.getEntityData<BitsetT>(id)->set(4);
     }
         break;
+    case 7:
+    {
+        // auto spring
+        auto id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 0.0f, 260.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 480.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 30.0f, 130.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 60.0f, 195.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 60.0f, 65.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 90.0f, 130.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 120.0f, 195.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 120.0f, 65.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 150.0f, 130.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+
+        // key
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 160.0f, 115.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 10.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 255, 32);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(14);
+
+        // auto spring
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 180.0f, 195.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 180.0f, 65.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 230.0f, 130.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 280.0f, 195.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 280.0f, 65.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 330.0f, 130.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+
+        // lock
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 420.0f, 0.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 60.0f, 90.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 96, 96, 96);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(15);
+
+        // exit
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 440.0f, 60.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 30.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 128, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(4);
+    }
+        break;
     default:
         fprintf(stderr, "ERROR: loadLevel got invalid level id!\n");
         break;
@@ -769,8 +884,8 @@ void CommonFns::collDetUpdateY(
                         && context->manager.hasComponent<BitsetT>(cid)
                         && ((context->manager.getEntityData<BitsetT>(id)->test(3)
                                 && context->manager.getEntityData<BitsetT>(cid)->test(12))
-                            || (context->manager.getEntityData<BitsetT>(id)->test(9)
-                                && context->manager.getEntityData<BitsetT>(cid)->test(12))))
+                            || (context->manager.getEntityData<BitsetT>(id)->test(12)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(3))))
                     {
                         // is colliding with auto spring
                         if(context->manager.getEntityData<BitsetT>(id)->test(3))
