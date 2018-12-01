@@ -67,11 +67,38 @@ struct Context
     ManagerT* manager;
     std::unordered_set<std::size_t> revertPos;
     BitsetT globalFlags;
+    std::unordered_map<unsigned int, sf::SoundBuffer> sfxMap;
+    std::vector<sf::Sound> soundPool;
 
     /*
      * globalFlags:
      * 0 - exit reached
      */
+
+    /*
+     * sfxMap:
+     * 0 - sfx_goalreached.ogg
+     */
+
+    void playSfx(const unsigned int& id)
+    {
+        try
+        {
+            sf::SoundBuffer& buf = sfxMap.at(id);
+            for(auto iter = soundPool.begin(); iter != soundPool.end(); ++iter)
+            {
+                if(iter->getStatus() != sf::SoundSource::Playing)
+                {
+                    iter->setBuffer(buf);
+                    iter->play();
+                    break;
+                }
+            }
+        } catch(const std::out_of_range& e)
+        {
+            fprintf(stderr, "ERROR: Failed to play sfx id \"%d\"!", id);
+        }
+    }
 };
 
 void resetWorld(const std::unordered_set<std::size_t> preserveSet, ManagerT& manager)
@@ -123,6 +150,10 @@ void loadLevel(const unsigned int id, ManagerT& manager)
 int main(int argc, char** argv)
 {
     Context context;
+
+    context.soundPool.resize(7);
+    context.sfxMap.insert(std::make_pair(0, sf::SoundBuffer{}));
+    context.sfxMap.at(0).loadFromFile("sfx_goalreached.ogg");
 
     // set up manager
     ManagerT manager;
@@ -395,6 +426,7 @@ int main(int argc, char** argv)
             if(context.globalFlags.test(0))
             {
                 context.globalFlags.reset(0);
+                context.playSfx(0);
                 resetWorld(preserveSet, manager);
                 loadLevel(++currentLevel, manager);
             }
