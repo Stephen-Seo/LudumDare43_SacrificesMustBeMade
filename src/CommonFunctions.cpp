@@ -67,7 +67,7 @@ void CommonFns::loadLevel(const unsigned int id, Context& context)
         context.manager.addComponent<BitsetT>(id);
         context.manager.getEntityData<BitsetT>(id)->set(9);
 
-        //exit
+        // exit
         id = context.manager.addEntity();
         context.manager.addComponent<ECStuff::Pos>(id, 435.0f, 30.0f);
         context.manager.addComponent<ECStuff::Size>(id, 30.0f, 30.0f);
@@ -83,16 +83,18 @@ void CommonFns::loadLevel(const unsigned int id, Context& context)
         context.manager.addComponent<ECStuff::Pos>(id, 380.0f, 140.0f);
         context.manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
         context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
-        /*
         id = context.manager.addEntity();
-        context.manager.addComponent<ECStuff::Pos>(id, 80.0f, 270.0f - 150.0f);
-        context.manager.addComponent<ECStuff::Size>(id, 400.0f, 10.0f);
-        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
-        id = context.manager.addEntity();
-        context.manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 200.0f);
+        context.manager.addComponent<ECStuff::Pos>(id, 0.0f, 140.0f);
         context.manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
         context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
-        */
+
+        // spring
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 205.0f, 230.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 50.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 255, 128);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(9);
 
         // death block
         id = context.manager.addEntity();
@@ -101,6 +103,14 @@ void CommonFns::loadLevel(const unsigned int id, Context& context)
         context.manager.addComponent<ECStuff::Drawable>(id, 255, 0, 0);
         context.manager.addComponent<BitsetT>(id);
         context.manager.getEntityData<BitsetT>(id)->set(11);
+
+        // exit
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 10.0f, 100.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 30.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 128, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(4);
     }
         break;
     default:
