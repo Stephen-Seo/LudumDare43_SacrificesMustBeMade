@@ -31,6 +31,8 @@
 
 #define WIN_CENTER_MAGNITUDE 30.0f
 
+#define DEATH_TIMER 4.0f
+
 /*
  * 0 - move left
  * 1 - move right
@@ -119,6 +121,7 @@ struct Context
      * 1 - is player dead
      * 2 - current level key get
      * 3 - win condition
+     * 4 - fade black on
      */
 
     /*

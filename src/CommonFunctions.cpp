@@ -525,6 +525,9 @@ void CommonFns::loadLevel(const unsigned int id, Context& context)
         context.globalFlags.set(3);
 
         context.manager.addComponent<ECStuff::ParticleGen>(context.playerID, 3);
+        BitsetT* bitset = context.manager.getEntityData<BitsetT>(context.playerID);
+        bitset->reset(0);
+        bitset->reset(1);
         break;
     }
 }

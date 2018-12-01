@@ -50,9 +50,10 @@ int main(int argc, char** argv)
 
     bool isRunning = true;
     sf::RectangleShape rect;
+    float deathTimer = DEATH_TIMER;
     GDT::IntervalBasedGameLoop(
         &isRunning,
-        [&isRunning, &window, &context]
+        [&isRunning, &window, &context, &deathTimer]
                 (float /*dt*/) { // update fn
             sf::Event event;
             while(window.pollEvent(event))
@@ -132,6 +133,26 @@ int main(int argc, char** argv)
                 CommonFns::cleanupLevel(context);
                 CommonFns::loadLevel(++context.currentLevel, context);
             }
+            if(context.globalFlags.test(1))
+            {
+                context.globalFlags.set(4);
+                deathTimer -= DELTA_TIME;
+                if(deathTimer <= 0.0f)
+                {
+                    deathTimer = 0.0f;
+                    CommonFns::resetWorld(context);
+                    CommonFns::loadLevel(context.currentLevel, context);
+                }
+            }
+            else if(context.globalFlags.test(4))
+            {
+                deathTimer += DELTA_TIME;
+                if(deathTimer >= DEATH_TIMER)
+                {
+                    deathTimer = DEATH_TIMER;
+                    context.globalFlags.reset(4);
+                }
+            }
             if(context.globalFlags.test(2))
             {
                 context.globalFlags.reset(2);
@@ -172,7 +193,7 @@ int main(int argc, char** argv)
                 pacc->y = (135.0f - ppos->y) * WIN_CENTER_MAGNITUDE;
             }
         },
-        [&context, &window, &rect] () { // draw fn
+        [&context, &window, &rect, &deathTimer] () { // draw fn
             window.clear();
 
             context.manager.forMatchingSignature<DrawComponents>(
@@ -185,6 +206,14 @@ int main(int argc, char** argv)
                     window.draw(rect);
                 },
                 nullptr);
+
+            if(context.globalFlags.test(4))
+            {
+                rect.setPosition(0.0f, 0.0f);
+                rect.setSize(sf::Vector2f(480.0f, 270.0f));
+                rect.setFillColor(sf::Color(0, 0, 0, (DEATH_TIMER - deathTimer) / DEATH_TIMER * 255));
+                window.draw(rect);
+            }
 
             window.display();
         },
