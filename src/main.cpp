@@ -1,8 +1,22 @@
 #include <SFML/Graphics.hpp>
 #include <GDT/GameLoop.hpp>
+#include <EC/Manager.hpp>
+
+#include "ECStuff.hpp"
+
+using AllComponents = EC::Meta::TypeList<
+    ECStuff::Pos,
+    ECStuff::Vel,
+    ECStuff::Acc
+>;
+
+using AllTags = EC::Meta::TypeList<
+>;
 
 int main(int argc, char** argv)
 {
+    EC::Manager<AllComponents, AllTags> manager;
+
     const char* title = "LudumDare43 - Sacrifices must be made - "
         "Entry by Stephen \"BurnedKirby\" Seo";
     sf::RenderWindow window(
