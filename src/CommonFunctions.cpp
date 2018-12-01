@@ -316,6 +316,91 @@ void CommonFns::loadLevel(const unsigned int id, Context& context)
         context.manager.getEntityData<BitsetT>(id)->set(4);
     }
         break;
+    case 6:
+    {
+        // ground
+        auto id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 410.0f, 250.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 70.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
+
+        // death block
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 395.0f, 246.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 15.0f, 24.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 0, 0);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(11);
+
+        // ground
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 345.0f, 250.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 50.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
+
+        // auto spring
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 330.0f, 240.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 15.0f, 30.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 240, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(12);
+
+        // ground
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 345.0f, 100.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
+
+        // key
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 355.0f, 80.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 10.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 255, 32);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(14);
+
+        // lock
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 270.0f, 0.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 10.0f, 270.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 96, 96, 96);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(15);
+
+        // death block
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 280.0f, 250.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 50.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 0, 0);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(11);
+
+        // spring
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 5.0f, 250.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 18.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 255, 128);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(9);
+
+        // death block
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 0.0f, 70.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 10.0f, 180.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 0, 0);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(11);
+
+        // exit
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 5.0f, 30.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 30.0f, 30.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 128, 255);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(4);
+    }
+        break;
     default:
         fprintf(stderr, "ERROR: loadLevel got invalid level id!\n");
         break;
@@ -452,7 +537,7 @@ void CommonFns::collDetUpdateX(
     context->manager.forMatchingSignature<ColComponents>(
         [&context, &id, &points] (std::size_t cid, void* /*ptr*/,
                 ECStuff::Pos* pos, ECStuff::Size* size) {
-            if(id != cid)
+            if(id != cid && context->manager.isAlive(id) && context->manager.isAlive(cid))
 //                        && context->revertPos.find(cid) == context->revertPos.end())
             {
                 if(context->manager.hasComponent<BitsetT>(cid)
@@ -511,6 +596,25 @@ void CommonFns::collDetUpdateX(
                         {
                             context->manager.deleteEntity(cid);
                         }
+                        context->globalFlags.set(1);
+                    }
+                    else if(context->manager.hasComponent<BitsetT>(id)
+                        && context->manager.hasComponent<BitsetT>(cid)
+                        && ((context->manager.getEntityData<BitsetT>(id)->test(3)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(14))
+                            || (context->manager.getEntityData<BitsetT>(id)->test(14)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(3))))
+                    {
+                        // is colliding with key block
+                        if(context->manager.getEntityData<BitsetT>(id)->test(3))
+                        {
+                            context->manager.deleteEntity(cid);
+                        }
+                        else
+                        {
+                            context->manager.deleteEntity(id);
+                        }
+                        context->globalFlags.set(2);
                     }
                     else
                     {
@@ -581,7 +685,7 @@ void CommonFns::collDetUpdateY(
     context->manager.forMatchingSignature<ColComponents>(
         [&context, &id, &points] (std::size_t cid, void* /*ptr*/,
                 ECStuff::Pos* pos, ECStuff::Size* size) {
-            if(id != cid)
+            if(id != cid && context->manager.isAlive(id) && context->manager.isAlive(cid))
 //                        && context->revertPos.find(cid) == context->revertPos.end())
             {
                 if(context->manager.hasComponent<BitsetT>(cid)
@@ -659,6 +763,7 @@ void CommonFns::collDetUpdateY(
                         {
                             context->manager.deleteEntity(cid);
                         }
+                        context->globalFlags.set(1);
                     }
                     else if(context->manager.hasComponent<BitsetT>(id)
                         && context->manager.hasComponent<BitsetT>(cid)
@@ -676,6 +781,24 @@ void CommonFns::collDetUpdateY(
                         {
                             context->manager.getEntityData<BitsetT>(cid)->set(13);
                         }
+                    }
+                    else if(context->manager.hasComponent<BitsetT>(id)
+                        && context->manager.hasComponent<BitsetT>(cid)
+                        && ((context->manager.getEntityData<BitsetT>(id)->test(3)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(14))
+                            || (context->manager.getEntityData<BitsetT>(id)->test(14)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(3))))
+                    {
+                        // is colliding with key block
+                        if(context->manager.getEntityData<BitsetT>(id)->test(3))
+                        {
+                            context->manager.deleteEntity(cid);
+                        }
+                        else
+                        {
+                            context->manager.deleteEntity(id);
+                        }
+                        context->globalFlags.set(2);
                     }
                     else
                     {

@@ -27,6 +27,9 @@ int main(int argc, char** argv)
     context.sfxMap.insert(std::make_pair(2, sf::SoundBuffer{}));
     context.sfxMap.at(2).loadFromFile("sfx_death.ogg");
 
+    context.sfxMap.insert(std::make_pair(3, sf::SoundBuffer{}));
+    context.sfxMap.at(3).loadFromFile("sfx_keyget.ogg");
+
     // create world
     CommonFns::resetWorld(context);
     CommonFns::loadLevel(context.currentLevel, context);
@@ -123,6 +126,19 @@ int main(int argc, char** argv)
                 context.playSfx(0);
                 CommonFns::cleanupLevel(context);
                 CommonFns::loadLevel(++context.currentLevel, context);
+            }
+            if(context.globalFlags.test(2))
+            {
+                context.globalFlags.reset(2);
+                context.playSfx(3);
+                context.manager.forMatchingSignature<EC::Meta::TypeList<BitsetT>>(
+                    [&context] (std::size_t id, void* /*ptr*/, BitsetT* bitset) {
+                        if(bitset->test(15))
+                        {
+                            context.manager.deleteEntity(id);
+                        }
+                    },
+                    nullptr);
             }
         },
         [&context, &window, &rect] () { // draw fn

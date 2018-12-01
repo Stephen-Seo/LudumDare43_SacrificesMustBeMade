@@ -37,6 +37,8 @@
  * 11 - is death block
  * 12 - is auto spring
  * 13 - is on auto spring
+ * 14 - is key
+ * 15 - is lock
  */
 using BitsetT = std::bitset<32>;
 
@@ -103,8 +105,9 @@ struct Context
 
     /*
      * globalFlags:
-     * 0 - exit reached
+     * 0 - current level exit reached
      * 1 - is player dead
+     * 2 - current level key get
      */
 
     /*
@@ -112,6 +115,7 @@ struct Context
      * 0 - sfx_goalreached.ogg
      * 1 - sfx_jump.ogg
      * 2 - sfx_death.ogg
+     * 3 - sfx_keyget.ogg
      */
 
     void playSfx(const unsigned int& id);
