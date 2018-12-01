@@ -24,15 +24,15 @@ void CommonFns::loadLevel(const unsigned int id, Context& context)
         auto id = context.manager.addEntity();
         context.manager.addComponent<ECStuff::Pos>(id, 100.0f, 270.0f - 50.0f);
         context.manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
-        context.manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
         id = context.manager.addEntity();
         context.manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 100.0f);
         context.manager.addComponent<ECStuff::Size>(id, 100.0f, 100.0f);
-        context.manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
         id = context.manager.addEntity();
         context.manager.addComponent<ECStuff::Pos>(id, 300.0f, 270.0f - 150.0f);
         context.manager.addComponent<ECStuff::Size>(id, 100.0f, 150.0f);
-        context.manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
 
         // exit
         id = context.manager.addEntity();
@@ -49,15 +49,15 @@ void CommonFns::loadLevel(const unsigned int id, Context& context)
         auto id = context.manager.addEntity();
         context.manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 50.0f);
         context.manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
-        context.manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
         id = context.manager.addEntity();
         context.manager.addComponent<ECStuff::Pos>(id, 80.0f, 270.0f - 150.0f);
         context.manager.addComponent<ECStuff::Size>(id, 400.0f, 10.0f);
-        context.manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
         id = context.manager.addEntity();
         context.manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 200.0f);
         context.manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
-        context.manager.addComponent<ECStuff::Drawable>(id, 255, 128, 0);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
 
         // spring
         id = context.manager.addEntity();
@@ -74,6 +74,33 @@ void CommonFns::loadLevel(const unsigned int id, Context& context)
         context.manager.addComponent<ECStuff::Drawable>(id, 128, 128, 255);
         context.manager.addComponent<BitsetT>(id);
         context.manager.getEntityData<BitsetT>(id)->set(4);
+    }
+        break;
+    case 2:
+    {
+        // ground
+        auto id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 380.0f, 140.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
+        /*
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 80.0f, 270.0f - 150.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 400.0f, 10.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 200.0f, 270.0f - 200.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 100.0f, 50.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 128, 64, 0);
+        */
+
+        // death block
+        id = context.manager.addEntity();
+        context.manager.addComponent<ECStuff::Pos>(id, 0.0f, 250.0f);
+        context.manager.addComponent<ECStuff::Size>(id, 480.0f, 20.0f);
+        context.manager.addComponent<ECStuff::Drawable>(id, 255, 0, 0);
+        context.manager.addComponent<BitsetT>(id);
+        context.manager.getEntityData<BitsetT>(id)->set(11);
     }
         break;
     default:
@@ -254,6 +281,24 @@ void CommonFns::collDetUpdateX(
                             context->manager.getEntityData<BitsetT>(cid)->set(7);
                         }
                     }
+                    else if(context->manager.hasComponent<BitsetT>(id)
+                        && context->manager.hasComponent<BitsetT>(cid)
+                        && ((context->manager.getEntityData<BitsetT>(id)->test(3)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(11))
+                            || (context->manager.getEntityData<BitsetT>(id)->test(11)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(3))))
+                    {
+                        // is colliding with death block
+                        context->playSfx(2);
+                        if(context->manager.getEntityData<BitsetT>(id)->test(3))
+                        {
+                            context->manager.deleteEntity(id);
+                        }
+                        else
+                        {
+                            context->manager.deleteEntity(cid);
+                        }
+                    }
                     else
                     {
                         context->revertPos.insert(id);
@@ -383,6 +428,24 @@ void CommonFns::collDetUpdateY(
                         }
                         context->revertPos.insert(id);
                         context->revertPos.insert(cid);
+                    }
+                    else if(context->manager.hasComponent<BitsetT>(id)
+                        && context->manager.hasComponent<BitsetT>(cid)
+                        && ((context->manager.getEntityData<BitsetT>(id)->test(3)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(11))
+                            || (context->manager.getEntityData<BitsetT>(id)->test(11)
+                                && context->manager.getEntityData<BitsetT>(cid)->test(3))))
+                    {
+                        // is colliding with death block
+                        context->playSfx(2);
+                        if(context->manager.getEntityData<BitsetT>(id)->test(3))
+                        {
+                            context->manager.deleteEntity(id);
+                        }
+                        else
+                        {
+                            context->manager.deleteEntity(cid);
+                        }
                     }
                     else
                     {

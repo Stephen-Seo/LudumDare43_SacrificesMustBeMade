@@ -24,6 +24,9 @@ int main(int argc, char** argv)
     context.sfxMap.insert(std::make_pair(1, sf::SoundBuffer{}));
     context.sfxMap.at(1).loadFromFile("sfx_jump.ogg");
 
+    context.sfxMap.insert(std::make_pair(2, sf::SoundBuffer{}));
+    context.sfxMap.at(2).loadFromFile("sfx_death.ogg");
+
     // create world
     CommonFns::resetWorld(context);
     CommonFns::loadLevel(context.currentLevel, context);
@@ -94,6 +97,7 @@ int main(int argc, char** argv)
                         if(context.currentSize <= 1)
                         {
                             // player reduced too much, player now dead
+                            context.playSfx(2);
                             context.manager.deleteEntity(context.playerID);
                             context.globalFlags.set(1);
                         }

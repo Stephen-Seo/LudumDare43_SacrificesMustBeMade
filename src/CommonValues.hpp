@@ -34,6 +34,7 @@
  * 8 - is particle
  * 9 - is spring
  * 10 - is on spring
+ * 11 - is death block
  */
 using BitsetT = std::bitset<32>;
 
@@ -108,6 +109,7 @@ struct Context
      * sfxMap:
      * 0 - sfx_goalreached.ogg
      * 1 - sfx_jump.ogg
+     * 2 - sfx_death.ogg
      */
 
     void playSfx(const unsigned int& id);

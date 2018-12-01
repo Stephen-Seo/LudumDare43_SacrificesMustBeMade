@@ -2,7 +2,9 @@
 
 ECStuff::Pos::Pos(float x, float y) :
 x(x),
-y(y)
+y(y),
+px(x),
+py(y)
 {}
 
 ECStuff::Vel::Vel(float x, float y) :
