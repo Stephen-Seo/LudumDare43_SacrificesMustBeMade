@@ -1,0 +1,6 @@
+[submodule "EntityComponentMetaSystem"]
+	path = EntityComponentMetaSystem
+	url = https://github.com/Stephen-Seo/EntityComponentMetaSystem.git
+[submodule "GameDevTools"]
+	path = GameDevTools
+	url = https://github.com/Stephen-Seo/GameDevTools.git
