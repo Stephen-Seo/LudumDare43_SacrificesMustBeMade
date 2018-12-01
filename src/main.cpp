@@ -78,6 +78,7 @@ struct Context
     /*
      * sfxMap:
      * 0 - sfx_goalreached.ogg
+     * 1 - sfx_jump.ogg
      */
 
     void playSfx(const unsigned int& id)
@@ -96,7 +97,7 @@ struct Context
             }
         } catch(const std::out_of_range& e)
         {
-            fprintf(stderr, "ERROR: Failed to play sfx id \"%d\"!", id);
+            fprintf(stderr, "ERROR: Context::playSfx got invalid sound id \"%d\"!", id);
         }
     }
 };
@@ -151,9 +152,14 @@ int main(int argc, char** argv)
 {
     Context context;
 
+    // sounds
     context.soundPool.resize(7);
+
     context.sfxMap.insert(std::make_pair(0, sf::SoundBuffer{}));
     context.sfxMap.at(0).loadFromFile("sfx_goalreached.ogg");
+
+    context.sfxMap.insert(std::make_pair(1, sf::SoundBuffer{}));
+    context.sfxMap.at(1).loadFromFile("sfx_jump.ogg");
 
     // set up manager
     ManagerT manager;
@@ -393,6 +399,7 @@ int main(int argc, char** argv)
                     BitsetT* bitset = manager.getEntityData<BitsetT>(playerID);
                     if(bitset->test(2))
                     {
+                        context.playSfx(1);
                         manager.getEntityData<ECStuff::Vel>(playerID)->y -= JUMP_VEL;
                         bitset->reset(2);
                     }
