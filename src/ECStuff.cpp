@@ -14,3 +14,8 @@ ECStuff::Acc::Acc(float x, float y) :
 x(x),
 y(y)
 {}
+
+ECStuff::Size::Size(float w, float h) :
+w(w),
+h(h)
+{}

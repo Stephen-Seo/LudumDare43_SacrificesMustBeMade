@@ -26,6 +26,14 @@ namespace ECStuff
         float x;
         float y;
     };
+
+    struct Size
+    {
+        Size(float w = 1.0f, float h = 1.0f);
+
+        float w;
+        float h;
+    };
 }
 
 #endif

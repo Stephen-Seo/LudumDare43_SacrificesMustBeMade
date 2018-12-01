@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <GDT/GameLoop.hpp>
 #include <EC/Manager.hpp>
 
@@ -7,7 +8,8 @@
 using AllComponents = EC::Meta::TypeList<
     ECStuff::Pos,
     ECStuff::Vel,
-    ECStuff::Acc
+    ECStuff::Acc,
+    ECStuff::Size
 >;
 
 using AllTags = EC::Meta::TypeList<
@@ -16,6 +18,13 @@ using AllTags = EC::Meta::TypeList<
 int main(int argc, char** argv)
 {
     EC::Manager<AllComponents, AllTags> manager;
+
+    sf::Music music;
+    if(music.openFromFile("ld43_music.ogg"))
+    {
+        music.setLoop(true);
+        music.play();
+    }
 
     const char* title = "LudumDare43 - Sacrifices must be made - "
         "Entry by Stephen \"BurnedKirby\" Seo";
@@ -46,5 +55,6 @@ int main(int argc, char** argv)
         1.0f / 120.0f);
 
     window.close();
+    music.stop();
     return 0;
 }
