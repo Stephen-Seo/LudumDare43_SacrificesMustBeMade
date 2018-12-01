@@ -19,8 +19,17 @@
 #define PARTICLE1_GENTIME 0.2f
 #define PARTICLE1_GEN_LIFETIME 0.7f
 
+#define PARTICLE2_GROWTH_RATE 3.0f
+#define PARTICLE2_FADE_RATE 1
+
+#define PARTICLE3_GENTIME 0.3f
+#define PARTICLE3_GENTIME_VAR 0.2f
+#define PARTICLE3_GEN_LIFETIME 2.0f
+
 #define RNG_PART_VEL 400.0f
 #define RNG_PART_ACC 200.0f
+
+#define WIN_CENTER_MAGNITUDE 30.0f
 
 /*
  * 0 - move left
@@ -102,12 +111,14 @@ struct Context
     unsigned int currentSize;
     unsigned int currentLevel;
     std::unordered_set<std::size_t> preserveSet;
+    sf::Music music;
 
     /*
      * globalFlags:
      * 0 - current level exit reached
      * 1 - is player dead
      * 2 - current level key get
+     * 3 - win condition
      */
 
     /*

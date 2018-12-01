@@ -59,6 +59,8 @@ namespace ECStuff
         /*
          * 0 - is a pariticle, timer is lifetime
          * 1 - generate type 0 particles
+         * 2 - is a particle (win cond.)
+         * 3 - generate type 2 particles
          */
         unsigned int type;
         float timer;

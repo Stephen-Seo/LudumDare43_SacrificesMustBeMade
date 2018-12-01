@@ -34,11 +34,10 @@ int main(int argc, char** argv)
     CommonFns::resetWorld(context);
     CommonFns::loadLevel(context.currentLevel, context);
 
-    sf::Music music;
-    if(music.openFromFile("ld43_music.ogg"))
+    if(context.music.openFromFile("ld43_music.ogg"))
     {
-        music.setLoop(true);
-        music.play();
+        context.music.setLoop(true);
+        context.music.play();
     }
 
     const char* title = "LudumDare43 - Sacrifices must be made - "
@@ -64,7 +63,8 @@ int main(int argc, char** argv)
                 }
                 else if(event.type == sf::Event::KeyPressed
                     && event.key.code == sf::Keyboard::Space
-                    && !context.globalFlags.test(1))
+                    && !context.globalFlags.test(1)
+                    && !context.globalFlags.test(3))
                 {
                     BitsetT* bitset = context.manager.getEntityData<BitsetT>(context.playerID);
                     if(bitset->test(2))
@@ -87,33 +87,38 @@ int main(int argc, char** argv)
                 else if(event.type == sf::Event::KeyPressed
                     && (event.key.code == sf::Keyboard::A
                         || event.key.code == sf::Keyboard::Left)
-                    && !context.globalFlags.test(1))
+                    && !context.globalFlags.test(1)
+                    && !context.globalFlags.test(3))
                 {
                     context.manager.getEntityData<BitsetT>(context.playerID)->set(0);
                 }
                 else if(event.type == sf::Event::KeyReleased
                     && (event.key.code == sf::Keyboard::A
                         || event.key.code == sf::Keyboard::Left)
-                    && !context.globalFlags.test(1))
+                    && !context.globalFlags.test(1)
+                    && !context.globalFlags.test(3))
                 {
                     context.manager.getEntityData<BitsetT>(context.playerID)->reset(0);
                 }
                 else if(event.type == sf::Event::KeyPressed
                     && (event.key.code == sf::Keyboard::D
                         || event.key.code == sf::Keyboard::Right)
-                    && !context.globalFlags.test(1))
+                    && !context.globalFlags.test(1)
+                    && !context.globalFlags.test(3))
                 {
                     context.manager.getEntityData<BitsetT>(context.playerID)->set(1);
                 }
                 else if(event.type == sf::Event::KeyReleased
                     && (event.key.code == sf::Keyboard::D
                         || event.key.code == sf::Keyboard::Right)
-                    && !context.globalFlags.test(1))
+                    && !context.globalFlags.test(1)
+                    && !context.globalFlags.test(3))
                 {
                     context.manager.getEntityData<BitsetT>(context.playerID)->reset(1);
                 }
                 else if(event.type == sf::Event::KeyPressed
-                    && event.key.code == sf::Keyboard::Escape)
+                    && event.key.code == sf::Keyboard::Escape
+                    && !context.globalFlags.test(3))
                 {
                     CommonFns::resetWorld(context);
                     CommonFns::loadLevel(context.currentLevel, context);
@@ -140,6 +145,32 @@ int main(int argc, char** argv)
                     },
                     nullptr);
             }
+            if(context.globalFlags.test(3))
+            {
+                ECStuff::Pos* ppos = context.manager.getEntityData<ECStuff::Pos>(context.playerID);
+                ECStuff::Size* psize = context.manager.getEntityData<ECStuff::Size>(context.playerID);
+                ECStuff::Acc* pacc = context.manager.getEntityData<ECStuff::Acc>(context.playerID);
+
+                if(ppos->x <= 0.0f)
+                {
+                    ppos->x = 1.0f;
+                }
+                else if(ppos->x + psize->w >= 480.0f)
+                {
+                    ppos->x = 480.0f - psize->w - 1.0f;
+                }
+                if(ppos->y <= 0.0f)
+                {
+                    ppos->y = 1.0f;
+                }
+                else if(ppos->y + psize->h >= 270.0f)
+                {
+                    ppos->y = 270.0f - psize->h - 1.0f;
+                }
+
+                pacc->x = (240.0f - ppos->x) * WIN_CENTER_MAGNITUDE;
+                pacc->y = (135.0f - ppos->y) * WIN_CENTER_MAGNITUDE;
+            }
         },
         [&context, &window, &rect] () { // draw fn
             window.clear();
@@ -161,6 +192,6 @@ int main(int argc, char** argv)
         1.0f / 120.0f);
 
     window.close();
-    music.stop();
+    context.music.stop();
     return 0;
 }

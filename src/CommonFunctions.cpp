@@ -517,7 +517,14 @@ void CommonFns::loadLevel(const unsigned int id, Context& context)
     }
         break;
     default:
-        fprintf(stderr, "ERROR: loadLevel got invalid level id!\n");
+        // win condition
+        context.music.stop();
+        context.music.openFromFile("ld43_winmusic.ogg");
+        context.music.setLoop(false);
+        context.music.play();
+        context.globalFlags.set(3);
+
+        context.manager.addComponent<ECStuff::ParticleGen>(context.playerID, 3);
         break;
     }
 }
@@ -1029,6 +1036,60 @@ void CommonFns::updateParticles(
             context->manager.getEntityData<ECStuff::ParticleGen>(pid)->timer = PARTICLE1_GEN_LIFETIME;
             context->manager.addComponent<ECStuff::Drawable>(pid,
                 255, 255, 255, 255);
+            context->manager.addComponent<BitsetT>(pid);
+            context->manager.getEntityData<BitsetT>(pid)->set(8);
+        }
+        break;
+    case 2:
+        particle->timer -= DELTA_TIME;
+        if(particle->timer <= 0.0f)
+        {
+            context->manager.deleteEntity(id);
+        }
+        else
+        {
+            size->w += PARTICLE2_GROWTH_RATE;
+            size->h += PARTICLE2_GROWTH_RATE;
+            pos->x -= PARTICLE2_GROWTH_RATE / 2.0f;
+            pos->y -= PARTICLE2_GROWTH_RATE / 2.0f;
+            ECStuff::Drawable* drawable = context->manager.getEntityData<ECStuff::Drawable>(id);
+            if((int)drawable->a - PARTICLE2_FADE_RATE <= 0)
+            {
+                drawable->a = 0;
+            }
+            else
+            {
+                drawable->a -= PARTICLE2_FADE_RATE;
+            }
+        }
+        break;
+    case 3:
+        particle->timer -= DELTA_TIME;
+        if(particle->timer <= 0.0f)
+        {
+            particle->timer = PARTICLE3_GENTIME
+                + std::uniform_real_distribution<float>(
+                    -PARTICLE3_GENTIME_VAR, PARTICLE3_GENTIME_VAR)
+                    (context->rng);
+            auto pid = context->manager.addEntity();
+            context->manager.addComponent<ECStuff::Pos>(pid,
+                pos->x,
+                pos->y);
+            context->manager.addComponent<ECStuff::Vel>(pid);
+            context->manager.addComponent<ECStuff::Acc>(pid);
+            context->manager.addComponent<ECStuff::Size>(pid,
+                size->w, size->h);
+            context->manager.addComponent<ECStuff::ParticleGen>(pid, 2);
+            context->manager.getEntityData<ECStuff::ParticleGen>(pid)->timer =
+                PARTICLE3_GEN_LIFETIME;
+            context->manager.addComponent<ECStuff::Drawable>(pid,
+                128 + std::uniform_int_distribution<unsigned char>(0, 127)
+                    (context->rng),
+                128 + std::uniform_int_distribution<unsigned char>(0, 127)
+                    (context->rng),
+                128 + std::uniform_int_distribution<unsigned char>(0, 127)
+                    (context->rng),
+                255);
             context->manager.addComponent<BitsetT>(pid);
             context->manager.getEntityData<BitsetT>(pid)->set(8);
         }
