@@ -35,6 +35,8 @@
  * 9 - is spring
  * 10 - is on spring
  * 11 - is death block
+ * 12 - is auto spring
+ * 13 - is on auto spring
  */
 using BitsetT = std::bitset<32>;
 

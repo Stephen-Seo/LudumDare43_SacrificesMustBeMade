@@ -37,6 +37,8 @@ namespace CommonFns
 
     void updateParticles(std::size_t id, void* ptr,
         ECStuff::Pos* pos, ECStuff::Size* size, ECStuff::ParticleGen* particle);
+
+    void createPlayerFragment(Context& context);
 }
 
 #endif

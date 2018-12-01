@@ -78,33 +78,7 @@ int main(int argc, char** argv)
                         }
                         bitset->reset(2);
 
-                        // create fragment
-                        auto id = context.manager.addEntity();
-                        ECStuff::Pos* ppos = context.manager.getEntityData<ECStuff::Pos>(context.playerID);
-                        ECStuff::Size* psize = context.manager.getEntityData<ECStuff::Size>(context.playerID);
-                        context.manager.addComponent<ECStuff::Pos>(id,
-                            ppos->x + psize->w / 2.0f - 2.0f,
-                            ppos->y + psize->h * 3.0f / 4.0f - 2.0f);
-                        context.manager.addComponent<ECStuff::Size>(id, 4.0f, 4.0f);
-                        context.manager.addComponent<BitsetT>(id);
-                        context.manager.getEntityData<BitsetT>(id)->set(5);
-                        context.manager.getEntityData<BitsetT>(id)->set(7);
-                        context.manager.addComponent<ECStuff::Drawable>(id);
-                        context.manager.addComponent<ECStuff::ParticleGen>(id, 1);
-
-                        // reduce player
-                        context.currentSize -= 1;
-                        if(context.currentSize <= 1)
-                        {
-                            // player reduced too much, player now dead
-                            context.playSfx(2);
-                            context.manager.deleteEntity(context.playerID);
-                            context.globalFlags.set(1);
-                        }
-                        ppos->x += 0.5f;
-                        ppos->y += 0.5f;
-                        psize->w = context.currentSize;
-                        psize->h = context.currentSize;
+                        CommonFns::createPlayerFragment(context);
                     }
                 }
                 else if(event.type == sf::Event::KeyPressed
