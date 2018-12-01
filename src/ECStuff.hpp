@@ -52,6 +52,18 @@ namespace ECStuff
         unsigned char a;
     };
 
+    struct ParticleGen
+    {
+        ParticleGen(unsigned int type = 0);
+
+        /*
+         * 0 - is a pariticle, timer is lifetime
+         * 1 - generate type 0 particles
+         */
+        unsigned int type;
+        float timer;
+    };
+
     // tags
 }
 

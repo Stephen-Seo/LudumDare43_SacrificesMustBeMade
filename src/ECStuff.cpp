@@ -30,3 +30,8 @@ g(g),
 b(b),
 a(a)
 {}
+
+ECStuff::ParticleGen::ParticleGen(unsigned int type) :
+type(type),
+timer(0.0f)
+{}

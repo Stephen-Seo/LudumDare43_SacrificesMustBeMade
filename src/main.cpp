@@ -1,6 +1,7 @@
 #include <unordered_set>
 #include <bitset>
 #include <cstdio>
+#include <random>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -16,12 +17,22 @@
 #define JUMP_VEL 2400.0f
 #define MOVE_SPEED 120.0f
 
+#define PARTICLE1_GENTIME 0.2f
+#define PARTICLE1_GEN_LIFETIME 0.7f
+
+#define RNG_PART_VEL 400.0f
+#define RNG_PART_ACC 200.0f
+
 /*
  * 0 - move left
  * 1 - move right
  * 2 - is grounded
  * 3 - is player
  * 4 - is exit
+ * 5 - is fragment
+ * 6 - is fragment pick-upable (after player no longer collides with it)
+ * 7 - collided with player
+ * 8 - is particle
  */
 using BitsetT = std::bitset<32>;
 
@@ -31,7 +42,8 @@ using AllComponents = EC::Meta::TypeList<
     ECStuff::Acc,
     ECStuff::Size,
     ECStuff::Drawable,
-    BitsetT
+    BitsetT,
+    ECStuff::ParticleGen
 >;
 
 using PhysComponents = EC::Meta::TypeList<
@@ -57,6 +69,16 @@ using DrawComponents = EC::Meta::TypeList<
     ECStuff::Drawable
 >;
 
+using FragmentComponents = EC::Meta::TypeList<
+    BitsetT
+>;
+
+using ParticleComponents = EC::Meta::TypeList<
+    ECStuff::Pos,
+    ECStuff::Size,
+    ECStuff::ParticleGen
+>;
+
 using AllTags = EC::Meta::TypeList<
 >;
 
@@ -69,6 +91,8 @@ struct Context
     BitsetT globalFlags;
     std::unordered_map<unsigned int, sf::SoundBuffer> sfxMap;
     std::vector<sf::Sound> soundPool;
+    std::size_t playerID;
+    std::default_random_engine rng;
 
     /*
      * globalFlags:
@@ -194,6 +218,12 @@ int main(int argc, char** argv)
     manager.addForMatchingFunction<ColComponents>(
         [] (std::size_t id, void* ptr, ECStuff::Pos* pos, ECStuff::Size* size) {
             Context* context = (Context*)ptr;
+            if(context->manager->hasComponent<BitsetT>(id)
+                && context->manager->getEntityData<BitsetT>(id)->test(8))
+            {
+                // do not collision check particles
+                return;
+            }
             float points[8] = {
                 pos->x          , pos->y,
                 pos->x + size->w, pos->y,
@@ -206,7 +236,13 @@ int main(int argc, char** argv)
                     if(id != cid)
 //                        && context->revertPos.find(cid) == context->revertPos.end())
                     {
-                        if(GDT::isWithinPolygon(points, 8, pos->x, pos->y)
+                        if(context->manager->hasComponent<BitsetT>(cid)
+                            && context->manager->getEntityData<BitsetT>(cid)->test(8))
+                        {
+                            // do not collision check particles
+                            return;
+                        }
+                        else if(GDT::isWithinPolygon(points, 8, pos->x, pos->y)
                             || GDT::isWithinPolygon(points, 8, pos->x + size->w, pos->y)
                             || GDT::isWithinPolygon(points, 8, pos->x + size->w, pos->y + size->h)
                             || GDT::isWithinPolygon(points, 8, pos->x, pos->y + size->h)
@@ -219,7 +255,25 @@ int main(int argc, char** argv)
                                     || (context->manager->getEntityData<BitsetT>(id)->test(4)
                                         && context->manager->getEntityData<BitsetT>(cid)->test(3))))
                             {
+                                // is colliding with exit
                                 context->globalFlags.set(0);
+                            }
+                            else if(context->manager->hasComponent<BitsetT>(id)
+                                && context->manager->hasComponent<BitsetT>(cid)
+                                && ((context->manager->getEntityData<BitsetT>(id)->test(3)
+                                        && context->manager->getEntityData<BitsetT>(cid)->test(5))
+                                    || (context->manager->getEntityData<BitsetT>(id)->test(5)
+                                        && context->manager->getEntityData<BitsetT>(cid)->test(3))))
+                            {
+                                // is colliding with fragment
+                                if(context->manager->getEntityData<BitsetT>(id)->test(5))
+                                {
+                                    context->manager->getEntityData<BitsetT>(id)->set(7);
+                                }
+                                else
+                                {
+                                    context->manager->getEntityData<BitsetT>(cid)->set(7);
+                                }
                             }
                             else
                             {
@@ -261,6 +315,12 @@ int main(int argc, char** argv)
     manager.addForMatchingFunction<ColComponents>(
         [] (std::size_t id, void* ptr, ECStuff::Pos* pos, ECStuff::Size* size) {
             Context* context = (Context*)ptr;
+            if(context->manager->hasComponent<BitsetT>(id)
+                && context->manager->getEntityData<BitsetT>(id)->test(8))
+            {
+                // do not collision check particles
+                return;
+            }
             float points[8] = {
                 pos->x          , pos->y,
                 pos->x + size->w, pos->y,
@@ -273,7 +333,13 @@ int main(int argc, char** argv)
                     if(id != cid)
 //                        && context->revertPos.find(cid) == context->revertPos.end())
                     {
-                        if(GDT::isWithinPolygon(points, 8, pos->x, pos->y)
+                        if(context->manager->hasComponent<BitsetT>(cid)
+                            && context->manager->getEntityData<BitsetT>(cid)->test(8))
+                        {
+                            // do not collision check particles
+                            return;
+                        }
+                        else if(GDT::isWithinPolygon(points, 8, pos->x, pos->y)
                             || GDT::isWithinPolygon(points, 8, pos->x + size->w, pos->y)
                             || GDT::isWithinPolygon(points, 8, pos->x + size->w, pos->y + size->h)
                             || GDT::isWithinPolygon(points, 8, pos->x, pos->y + size->h)
@@ -286,7 +352,25 @@ int main(int argc, char** argv)
                                     || (context->manager->getEntityData<BitsetT>(id)->test(4)
                                         && context->manager->getEntityData<BitsetT>(cid)->test(3))))
                             {
+                                // is colliding with exit
                                 context->globalFlags.set(0);
+                            }
+                            else if(context->manager->hasComponent<BitsetT>(id)
+                                && context->manager->hasComponent<BitsetT>(cid)
+                                && ((context->manager->getEntityData<BitsetT>(id)->test(3)
+                                        && context->manager->getEntityData<BitsetT>(cid)->test(5))
+                                    || (context->manager->getEntityData<BitsetT>(id)->test(5)
+                                        && context->manager->getEntityData<BitsetT>(cid)->test(3))))
+                            {
+                                // is colliding with fragment
+                                if(context->manager->getEntityData<BitsetT>(id)->test(5))
+                                {
+                                    context->manager->getEntityData<BitsetT>(id)->set(7);
+                                }
+                                else
+                                {
+                                    context->manager->getEntityData<BitsetT>(cid)->set(7);
+                                }
                             }
                             else
                             {
@@ -316,13 +400,88 @@ int main(int argc, char** argv)
             }
         },
         &context);
+    // check fragments
+    manager.addForMatchingFunction<FragmentComponents>(
+        [] (std::size_t id, void* ptr, BitsetT* bitset) {
+            if(bitset->test(5))
+            {
+                if(bitset->test(7))
+                {
+                    if(bitset->test(6))
+                    {
+                        Context* context = (Context*)ptr;
+                        context->manager->deleteEntity(id);
+                        ECStuff::Pos* ppos = context->manager->getEntityData<ECStuff::Pos>(context->playerID);
+                        ECStuff::Size* psize = context->manager->getEntityData<ECStuff::Size>(context->playerID);
+                        ppos->x -= 1.0f;
+                        ppos->y -= 1.0f;
+                        psize->w += 1.0f;
+                        psize->h += 1.0f;
+                    }
+                    bitset->reset(7);
+                }
+                else
+                {
+                    bitset->set(6);
+                }
+            }
+        },
+        &context);
+    // particle update
+    manager.addForMatchingFunction<ParticleComponents>(
+        [] (std::size_t id, void* ptr, ECStuff::Pos* pos,
+                ECStuff::Size* size, ECStuff::ParticleGen* particle) {
+            Context* context = (Context*)ptr;
+            switch(particle->type)
+            {
+            case 0:
+                particle->timer -= DELTA_TIME;
+                if(particle->timer <= 0.0f)
+                {
+                    context->manager->deleteEntity(id);
+                }
+                break;
+            case 1:
+                particle->timer -= DELTA_TIME;
+                if(particle->timer <= 0.0f)
+                {
+                    particle->timer = PARTICLE1_GENTIME;
+                    auto pid = context->manager->addEntity();
+                    context->manager->addComponent<ECStuff::Pos>(pid,
+                        pos->x + size->w / 2.0f,
+                        pos->y + size->h / 2.0f);
+                    context->manager->addComponent<ECStuff::Vel>(pid,
+                        std::uniform_real_distribution<float>(
+                            -RNG_PART_VEL, RNG_PART_VEL)(context->rng),
+                        std::uniform_real_distribution<float>(
+                            -RNG_PART_VEL, RNG_PART_VEL)(context->rng));
+                    context->manager->addComponent<ECStuff::Acc>(pid,
+                        std::uniform_real_distribution<float>(
+                            -RNG_PART_ACC, RNG_PART_ACC)(context->rng),
+                        std::uniform_real_distribution<float>(
+                            -RNG_PART_ACC, RNG_PART_ACC)(context->rng));
+                    context->manager->addComponent<ECStuff::Size>(pid,
+                        1.0f, 1.0f);
+                    context->manager->addComponent<ECStuff::ParticleGen>(pid);
+                    context->manager->getEntityData<ECStuff::ParticleGen>(pid)->timer = PARTICLE1_GEN_LIFETIME;
+                    context->manager->addComponent<ECStuff::Drawable>(pid,
+                        255, 255, 255, 255);
+                    context->manager->addComponent<BitsetT>(pid);
+                    context->manager->getEntityData<BitsetT>(pid)->set(8);
+                }
+                break;
+            default:
+                break;
+            }
+        },
+        &context);
 
 
     std::unordered_set<std::size_t> preserveSet;
 
     // create player
     auto playerID = manager.addEntity();
-    manager.addComponent<ECStuff::Pos>(playerID);
+    manager.addComponent<ECStuff::Pos>(playerID, 2.0f, 200.0f);
     manager.addComponent<ECStuff::Vel>(playerID);
     manager.addComponent<ECStuff::Acc>(playerID, 0.0f, GRAVITY_ACC);
     manager.addComponent<ECStuff::Size>(playerID, 50.0f, 50.0f);
@@ -330,6 +489,7 @@ int main(int argc, char** argv)
     manager.addComponent<BitsetT>(playerID);
     manager.getEntityData<BitsetT>(playerID)->set(3);
     preserveSet.insert(playerID);
+    context.playerID = playerID;
 
     // world boundaries
     {
@@ -402,6 +562,26 @@ int main(int argc, char** argv)
                         context.playSfx(1);
                         manager.getEntityData<ECStuff::Vel>(playerID)->y -= JUMP_VEL;
                         bitset->reset(2);
+
+                        // create fragment
+                        auto id = manager.addEntity();
+                        ECStuff::Pos* ppos = manager.getEntityData<ECStuff::Pos>(playerID);
+                        ECStuff::Size* psize = manager.getEntityData<ECStuff::Size>(playerID);
+                        manager.addComponent<ECStuff::Pos>(id,
+                            ppos->x + psize->w / 2.0f - 2.0f,
+                            ppos->y + psize->h / 2.0f - 2.0f);
+                        manager.addComponent<ECStuff::Size>(id, 4.0f, 4.0f);
+                        manager.addComponent<BitsetT>(id);
+                        manager.getEntityData<BitsetT>(id)->set(5);
+                        manager.getEntityData<BitsetT>(id)->set(7);
+                        manager.addComponent<ECStuff::Drawable>(id);
+                        manager.addComponent<ECStuff::ParticleGen>(id, 1);
+
+                        // reduce player
+                        ppos->x += 0.5f;
+                        ppos->y += 0.5f;
+                        psize->w -= 1.0f;
+                        psize->h -= 1.0f;
                     }
                 }
                 else if(event.type == sf::Event::KeyPressed
