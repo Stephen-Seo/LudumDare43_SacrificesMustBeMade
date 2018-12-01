@@ -85,7 +85,7 @@ int main(int argc, char** argv)
                         ECStuff::Size* psize = manager.getEntityData<ECStuff::Size>(context.playerID);
                         manager.addComponent<ECStuff::Pos>(id,
                             ppos->x + psize->w / 2.0f - 2.0f,
-                            ppos->y + psize->h / 2.0f - 2.0f);
+                            ppos->y + psize->h * 3.0f / 4.0f - 2.0f);
                         manager.addComponent<ECStuff::Size>(id, 4.0f, 4.0f);
                         manager.addComponent<BitsetT>(id);
                         manager.getEntityData<BitsetT>(id)->set(5);

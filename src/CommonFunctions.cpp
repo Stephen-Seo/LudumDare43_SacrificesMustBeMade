@@ -62,15 +62,15 @@ void CommonFns::loadLevel(const unsigned int id, ManagerT& manager)
 
         // spring
         id = manager.addEntity();
-        manager.addComponent<ECStuff::Pos>(id, 10.0f, 270.0f - 10.0f);
-        manager.addComponent<ECStuff::Size>(id, 50.0f, 10.0f);
+        manager.addComponent<ECStuff::Pos>(id, 10.0f, 270.0f - 20.0f);
+        manager.addComponent<ECStuff::Size>(id, 50.0f, 20.0f);
         manager.addComponent<ECStuff::Drawable>(id, 128, 255, 128);
         manager.addComponent<BitsetT>(id);
         manager.getEntityData<BitsetT>(id)->set(9);
 
         //exit
         id = manager.addEntity();
-        manager.addComponent<ECStuff::Pos>(id, 435.0f, 270.0f - 200.0f);
+        manager.addComponent<ECStuff::Pos>(id, 435.0f, 30.0f);
         manager.addComponent<ECStuff::Size>(id, 30.0f, 30.0f);
         manager.addComponent<ECStuff::Drawable>(id, 128, 128, 255);
         manager.addComponent<BitsetT>(id);
