@@ -55,17 +55,17 @@ define uniq =
   ${seen}
 endef
 
-all:    LD43_byStephenBurnedKirbySeo.exe
+all:    LD43_byStephen_BurnedKirby_Seo.exe
 
-LD43_byStephenBurnedKirbySeo.exe: ${OBJECTS}
-	$(MINGW_CXX) $(LINKER_FLAGS) -o LD43_byStephenBurnedKirbySeo.exe ${LINKER_LIBS} ${OBJECTS} ${POST_LINKER_LIBS}
+LD43_byStephen_BurnedKirby_Seo.exe: ${OBJECTS}
+	$(MINGW_CXX) $(LINKER_FLAGS) -o LD43_byStephen_BurnedKirby_Seo.exe ${LINKER_LIBS} ${OBJECTS} ${POST_LINKER_LIBS}
 
 $(call uniq,$(dir $(OBJECTS) $(RP_OBJECTS) $(LUASCRIPTS))):
 	mkdir -p $@
 
 clean:
 		rm -rf $(OBJDIR)
-		rm -f LD43_byStephenBurnedKirbySeo.exe
+		rm -f LD43_byStephen_BurnedKirby_Seo.exe
 
 .SECONDEXPANSION:
 
