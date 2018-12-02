@@ -51,6 +51,11 @@ int main(int argc, char** argv)
     bool isRunning = true;
     sf::RectangleShape rect;
     float deathTimer = DEATH_TIMER;
+    sf::RenderTexture renderT[2];
+    renderT[0].create(480, 270);
+    renderT[0].clear();
+    renderT[1].create(480, 270);
+    renderT[1].clear();
     GDT::IntervalBasedGameLoop(
         &isRunning,
         [&isRunning, &window, &context, &deathTimer]
@@ -193,9 +198,37 @@ int main(int argc, char** argv)
                 pacc->y = (135.0f - ppos->y) * WIN_CENTER_MAGNITUDE;
             }
         },
-        [&context, &window, &rect, &deathTimer] () { // draw fn
+        [&context, &window, &rect, &deathTimer, &renderT] () { // draw fn
             window.clear();
 
+            // fade effect
+            context.manager.forMatchingSignature<DrawComponents>(
+                [&renderT, &rect] (std::size_t /*id*/, void* /*ptr*/, ECStuff::Pos* pos,
+                        ECStuff::Size* size, ECStuff::Drawable* drawable) {
+                    rect.setSize(sf::Vector2f(size->w, size->h));
+                    rect.setPosition(pos->x, pos->y);
+                    rect.setFillColor(sf::Color(
+                        drawable->r, drawable->g, drawable->b, drawable->a));
+                    renderT[0].draw(rect);
+                },
+                nullptr);
+
+            renderT[0].display();
+            sf::Sprite sprite;
+            sprite.setTexture(renderT[0].getTexture(), true);
+            sprite.setColor(sf::Color(255, 255, 255, 240));
+            renderT[1].clear();
+            renderT[1].draw(sprite);
+            renderT[1].display();
+            sprite.setTexture(renderT[1].getTexture(), true);
+            sprite.setColor(sf::Color::White);
+            renderT[0].clear();
+            renderT[0].draw(sprite);
+            renderT[0].display();
+            sprite.setTexture(renderT[0].getTexture(), true);
+            window.draw(sprite);
+
+            // actual draw
             context.manager.forMatchingSignature<DrawComponents>(
                 [&window, &rect] (std::size_t /*id*/, void* /*ptr*/, ECStuff::Pos* pos,
                         ECStuff::Size* size, ECStuff::Drawable* drawable) {
