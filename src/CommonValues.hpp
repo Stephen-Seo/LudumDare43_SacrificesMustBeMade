@@ -33,6 +33,12 @@
 
 #define DEATH_TIMER 4.0f
 
+#define FADERT_SPRITE_ALPHA 230
+
+#define EXITRT_TIMER 1.0f
+#define EXITRT_MOVE_MAGNITUDE 3.0f
+#define EXITRT_SPRITE_ALPHA 210
+
 /*
  * 0 - move left
  * 1 - move right

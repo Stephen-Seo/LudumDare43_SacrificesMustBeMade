@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <random>
+#include <cmath>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -51,14 +52,21 @@ int main(int argc, char** argv)
     bool isRunning = true;
     sf::RectangleShape rect;
     float deathTimer = DEATH_TIMER;
-    sf::RenderTexture renderT[2];
-    renderT[0].create(480, 270);
-    renderT[0].clear();
-    renderT[1].create(480, 270);
-    renderT[1].clear();
+    sf::RenderTexture fadeRT[2];
+    fadeRT[0].create(480, 270);
+    fadeRT[0].clear();
+    fadeRT[1].create(480, 270);
+    fadeRT[1].clear();
+    sf::RenderTexture exitRT[2];
+    exitRT[0].create(480, 270);
+    exitRT[0].clear();
+    exitRT[1].create(480, 270);
+    exitRT[1].clear();
+    float exitRTTimer = 0.0f;
+    const float PI = acos(-1.0f);
     GDT::IntervalBasedGameLoop(
         &isRunning,
-        [&isRunning, &window, &context, &deathTimer]
+        [&isRunning, &window, &context, &deathTimer, &exitRTTimer]
                 (float /*dt*/) { // update fn
             sf::Event event;
             while(window.pollEvent(event))
@@ -197,40 +205,106 @@ int main(int argc, char** argv)
                 pacc->x = (240.0f - ppos->x) * WIN_CENTER_MAGNITUDE;
                 pacc->y = (135.0f - ppos->y) * WIN_CENTER_MAGNITUDE;
             }
+            exitRTTimer += DELTA_TIME;
+            if(exitRTTimer >= EXITRT_TIMER)
+            {
+                exitRTTimer -= EXITRT_TIMER;
+            }
         },
-        [&context, &window, &rect, &deathTimer, &renderT] () { // draw fn
+        [&context, &window, &rect, &deathTimer, &fadeRT, &exitRT, &exitRTTimer, &PI] () { // draw fn
             window.clear();
 
-            // fade effect
-            context.manager.forMatchingSignature<FadeDrawComponents>(
-                [&renderT, &rect] (std::size_t /*id*/, void* /*ptr*/, ECStuff::Pos* pos,
-                        ECStuff::Size* size, ECStuff::Drawable* drawable,
-                        BitsetT* bitset) {
-                    if(bitset->test(3) || bitset->test(8))
-                    {
-                        rect.setSize(sf::Vector2f(size->w, size->h));
-                        rect.setPosition(pos->x, pos->y);
-                        rect.setFillColor(sf::Color(
-                            drawable->r, drawable->g, drawable->b, drawable->a));
-                        renderT[0].draw(rect);
-                    }
-                },
-                nullptr);
+            if(!context.globalFlags.test(3))
+            {
+                // fade effect
+                context.manager.forMatchingSignature<FadeDrawComponents>(
+                    [&fadeRT, &rect] (std::size_t /*id*/, void* /*ptr*/, ECStuff::Pos* pos,
+                            ECStuff::Size* size, ECStuff::Drawable* drawable,
+                            BitsetT* bitset) {
+                        if(bitset->test(3) || bitset->test(8))
+                        {
+                            rect.setSize(sf::Vector2f(size->w, size->h));
+                            rect.setPosition(pos->x, pos->y);
+                            rect.setFillColor(sf::Color(
+                                drawable->r, drawable->g, drawable->b, drawable->a));
+                            fadeRT[0].draw(rect);
+                        }
+                    },
+                    nullptr);
 
-            renderT[0].display();
-            sf::Sprite sprite;
-            sprite.setTexture(renderT[0].getTexture(), true);
-            sprite.setColor(sf::Color(255, 255, 255, 240));
-            renderT[1].clear();
-            renderT[1].draw(sprite);
-            renderT[1].display();
-            sprite.setTexture(renderT[1].getTexture(), true);
-            sprite.setColor(sf::Color::White);
-            renderT[0].clear();
-            renderT[0].draw(sprite);
-            renderT[0].display();
-            sprite.setTexture(renderT[0].getTexture(), true);
-            window.draw(sprite);
+                fadeRT[0].display();
+                sf::Sprite sprite;
+                sprite.setTexture(fadeRT[0].getTexture(), true);
+                sprite.setColor(sf::Color(255, 255, 255, FADERT_SPRITE_ALPHA));
+                fadeRT[1].clear();
+                fadeRT[1].draw(sprite);
+                fadeRT[1].display();
+                sprite.setTexture(fadeRT[1].getTexture(), true);
+                sprite.setColor(sf::Color::White);
+                fadeRT[0].clear();
+                fadeRT[0].draw(sprite);
+                fadeRT[0].display();
+                sprite.setTexture(fadeRT[0].getTexture(), true);
+                window.draw(sprite);
+
+                // exit effect
+                ECStuff::Pos* exitPos = nullptr;
+                ECStuff::Size* exitSize = nullptr;
+                context.manager.forMatchingSignature<FadeDrawComponents>(
+                    [&exitRT, &rect, &exitPos, &exitSize, &exitRTTimer, &PI] (std::size_t /*id*/, void* /*ptr*/, ECStuff::Pos* pos,
+                            ECStuff::Size* size, ECStuff::Drawable* drawable,
+                            BitsetT* bitset) {
+                        if(bitset->test(4))
+                        {
+                            rect.setSize(sf::Vector2f(size->w, size->h));
+                            rect.setFillColor(sf::Color(
+                                drawable->r, drawable->g, drawable->b, drawable->a));
+                            rect.setPosition(
+                                pos->x + EXITRT_MOVE_MAGNITUDE *
+                                    cos(exitRTTimer / EXITRT_TIMER * 2 * PI),
+                                pos->y + EXITRT_MOVE_MAGNITUDE *
+                                    sin(exitRTTimer / EXITRT_TIMER * 2 * PI));
+                            exitRT[0].draw(rect);
+                            rect.setPosition(
+                                pos->x + EXITRT_MOVE_MAGNITUDE *
+                                    cos(exitRTTimer / EXITRT_TIMER * 2 * PI + PI),
+                                pos->y + EXITRT_MOVE_MAGNITUDE *
+                                    sin(exitRTTimer / EXITRT_TIMER * 2 * PI + PI));
+                            exitRT[0].draw(rect);
+                            exitPos = pos;
+                            exitSize = size;
+                        }
+                    },
+                    nullptr);
+
+                if(exitPos && exitSize)
+                {
+                    sf::RenderStates states(sf::BlendAdd);
+                    exitRT[0].display();
+                    exitRT[1].clear();
+                    sprite.setTexture(exitRT[0].getTexture(), true);
+                    sprite.setOrigin(
+                        exitPos->x + exitSize->w / 2.0f,
+                        exitPos->y + exitSize->h / 2.0f);
+                    sprite.setPosition(
+                        sprite.getOrigin().x,
+                        sprite.getOrigin().y);
+                    sprite.setScale(1.1f, 1.1f);
+                    sprite.setColor(sf::Color(255, 255, 255, EXITRT_SPRITE_ALPHA));
+                    exitRT[1].draw(sprite);
+                    exitRT[1].display();
+                    sprite.setTexture(exitRT[1].getTexture(), true);
+                    sprite.setOrigin(0.0f, 0.0f);
+                    sprite.setPosition(0.0f, 0.0f);
+                    sprite.setScale(1.0f, 1.0f);
+                    sprite.setColor(sf::Color::White);
+                    exitRT[0].clear();
+                    exitRT[0].draw(sprite);
+                    exitRT[0].display();
+                    sprite.setTexture(exitRT[0].getTexture(), true);
+                    window.draw(sprite, states);
+                }
+            }
 
             // actual draw
             context.manager.forMatchingSignature<DrawComponents>(
