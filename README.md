@@ -33,6 +33,8 @@ Attribution-ShareAlike 4.0 Internation license (CC BY-SA 4.0).](https://github.c
 
 The game requires some resources found in the assets/ directory of this project.
 
+(Note that the downloads already have these resources packaged in them.)
+
 The .mmpz files are [lmms](https://lmms.io) project files.
 
 The game expects these resources (they should be in the same directory as the
