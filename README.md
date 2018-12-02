@@ -24,7 +24,9 @@ ArchLinux host for 32-bit Windows target).
     mkdir build; cd build
     cmake -DCMAKE_BUILD_TYPE=Release ..
     make
+    # the executable is called "LD43", so you can just run it to play
     ./LD43
+    # See the "Playing the game" section below for notes about game resources
 
 ## Notices
 
