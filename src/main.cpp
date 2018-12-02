@@ -64,6 +64,12 @@ int main(int argc, char** argv)
     exitRT[1].clear();
     float exitRTTimer = 0.0f;
     const float PI = acos(-1.0f);
+    sf::Texture controlsTexture;
+    sf::Sprite controlsSprite;
+    if(controlsTexture.loadFromFile("controls.png"))
+    {
+        controlsSprite.setTexture(controlsTexture, true);
+    }
     GDT::IntervalBasedGameLoop(
         &isRunning,
         [&isRunning, &window, &context, &deathTimer, &exitRTTimer]
@@ -211,7 +217,8 @@ int main(int argc, char** argv)
                 exitRTTimer -= EXITRT_TIMER;
             }
         },
-        [&context, &window, &rect, &deathTimer, &fadeRT, &exitRT, &exitRTTimer, &PI] () { // draw fn
+        [&context, &window, &rect, &deathTimer, &fadeRT, &exitRT, &exitRTTimer,
+                &PI, &controlsSprite] () { // draw fn
             window.clear();
 
             if(!context.globalFlags.test(3))
@@ -317,6 +324,11 @@ int main(int argc, char** argv)
                     window.draw(rect);
                 },
                 nullptr);
+
+            if(context.currentLevel == 0)
+            {
+                window.draw(controlsSprite);
+            }
 
             if(context.globalFlags.test(4))
             {
