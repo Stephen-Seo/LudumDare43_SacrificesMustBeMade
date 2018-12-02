@@ -21,6 +21,9 @@ First, make sure you have all submodules.
 You must use cmake (the buildWin/Makefile is only for cross-compiling from
 ArchLinux host for 32-bit Windows target).
 
+(Note this project uses [SFML-2](https://sfml-dev.org), so you should have it
+installed (dev packages in Debian flavoured Linux distros))
+
     mkdir build; cd build
     cmake -DCMAKE_BUILD_TYPE=Release ..
     make
