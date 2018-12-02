@@ -28,3 +28,22 @@ ArchLinux host for 32-bit Windows target).
 
 [The assets in the assets/ directory is under the Creative Commons
 Attribution-ShareAlike 4.0 Internation license (CC BY-SA 4.0).](https://github.com/Stephen-Seo/LudumDare43_SacrificesMustBeMade/blob/master/assets/ASSETS_LICENSE)
+
+## Playing the game
+
+The game requires some resources found in the assets/ directory of this project.
+
+The .mmpz files are [lmms](https://lmms.io) project files.
+
+The game expects these resources:
+ - ld43\_music.ogg
+ - ld43\_winmusic.ogg
+ - sfx\_death.ogg
+ - sfx\_goalreached.ogg
+ - sfx\_jump.ogg
+ - sfx\_keyget.ogg
+ - controls.png
+
+The .ogg files are exported from the lmms project files found in assets/.
+
+The controls.png is found in assets/.
