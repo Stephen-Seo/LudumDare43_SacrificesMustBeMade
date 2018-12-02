@@ -35,7 +35,8 @@ The game requires some resources found in the assets/ directory of this project.
 
 The .mmpz files are [lmms](https://lmms.io) project files.
 
-The game expects these resources:
+The game expects these resources (they should be in the same directory as the
+game executable):
  - ld43\_music.ogg
  - ld43\_winmusic.ogg
  - sfx\_death.ogg
