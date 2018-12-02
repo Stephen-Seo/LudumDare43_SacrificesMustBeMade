@@ -4,6 +4,8 @@ https://ldjam.com/
 
 [Entry link](https://ldjam.com/events/ludum-dare/43/$131423)
 
+[Screenlapse video showing creation of game jam game](https://youtu.be/ExYgYxRjAL0)
+
 ## Compiling
 
 You must use cmake (the buildWin/Makefile is only for cross-compiling from
