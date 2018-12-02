@@ -2,6 +2,8 @@
 
 https://ldjam.com/
 
+[Entry link](https://ldjam.com/events/ludum-dare/43/$131423)
+
 ## Compiling
 
 You must use cmake (the buildWin/Makefile is only for cross-compiling from
