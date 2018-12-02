@@ -586,28 +586,28 @@ void CommonFns::resetWorld(Context& context)
 void CommonFns::loadManagerFns(Context* context)
 {
     context->manager.addForMatchingFunction<PhysComponents>(
-        CommonFns::physUpdateX,
+        &CommonFns::physUpdateX,
         context);
     context->manager.addForMatchingFunction<ColComponents>(
-        CommonFns::collDetUpdateX,
+        &CommonFns::collDetUpdateX,
         context);
     context->manager.addForMatchingFunction<ColFinComponents>(
-        CommonFns::finUpdateX,
+        &CommonFns::finUpdateX,
         context);
     context->manager.addForMatchingFunction<PhysComponents>(
-        CommonFns::physUpdateY,
+        &CommonFns::physUpdateY,
         context);
     context->manager.addForMatchingFunction<ColComponents>(
-        CommonFns::collDetUpdateY,
+        &CommonFns::collDetUpdateY,
         context);
     context->manager.addForMatchingFunction<ColFinComponents>(
-        CommonFns::finUpdateY,
+        &CommonFns::finUpdateY,
         context);
     context->manager.addForMatchingFunction<FragmentComponents>(
-        CommonFns::updateFragments,
+        &CommonFns::updateFragments,
         context);
     context->manager.addForMatchingFunction<ParticleComponents>(
-        CommonFns::updateParticles,
+        &CommonFns::updateParticles,
         context);
 }
 
