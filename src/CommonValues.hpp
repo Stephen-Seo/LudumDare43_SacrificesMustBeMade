@@ -80,6 +80,13 @@ using ColFinComponents = EC::Meta::TypeList<
     ECStuff::Vel
 >;
 
+using FadeDrawComponents = EC::Meta::TypeList<
+    ECStuff::Pos,
+    ECStuff::Size,
+    ECStuff::Drawable,
+    BitsetT
+>;
+
 using DrawComponents = EC::Meta::TypeList<
     ECStuff::Pos,
     ECStuff::Size,

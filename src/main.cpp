@@ -202,14 +202,18 @@ int main(int argc, char** argv)
             window.clear();
 
             // fade effect
-            context.manager.forMatchingSignature<DrawComponents>(
+            context.manager.forMatchingSignature<FadeDrawComponents>(
                 [&renderT, &rect] (std::size_t /*id*/, void* /*ptr*/, ECStuff::Pos* pos,
-                        ECStuff::Size* size, ECStuff::Drawable* drawable) {
-                    rect.setSize(sf::Vector2f(size->w, size->h));
-                    rect.setPosition(pos->x, pos->y);
-                    rect.setFillColor(sf::Color(
-                        drawable->r, drawable->g, drawable->b, drawable->a));
-                    renderT[0].draw(rect);
+                        ECStuff::Size* size, ECStuff::Drawable* drawable,
+                        BitsetT* bitset) {
+                    if(bitset->test(3) || bitset->test(8))
+                    {
+                        rect.setSize(sf::Vector2f(size->w, size->h));
+                        rect.setPosition(pos->x, pos->y);
+                        rect.setFillColor(sf::Color(
+                            drawable->r, drawable->g, drawable->b, drawable->a));
+                        renderT[0].draw(rect);
+                    }
                 },
                 nullptr);
 
