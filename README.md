@@ -14,6 +14,10 @@ https://ldjam.com/
 
 ## Compiling
 
+First, make sure you have all submodules.
+
+    git submodule update --init
+
 You must use cmake (the buildWin/Makefile is only for cross-compiling from
 ArchLinux host for 32-bit Windows target).
 
