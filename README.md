@@ -6,6 +6,12 @@ https://ldjam.com/
 
 [Screenlapse video showing creation of game jam game](https://youtu.be/ExYgYxRjAL0)
 
+## Downloads
+
+[Windows 32bit](https://seodisparate.com/static/uploads/LD43_byStephen_BurnedKirby_Seo_Win32.zip)
+
+[Linux/Ubuntu 64bit](https://seodisparate.com/static/uploads/LD43_byStephen_BurnedKirby_Seo_Ubuntu64.tar.gz)
+
 ## Compiling
 
 You must use cmake (the buildWin/Makefile is only for cross-compiling from
